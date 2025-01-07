@@ -1,0 +1,90 @@
+{
+  "rate_limits_config": {
+    "time_window_seconds": 60, 
+    "user_max_requests_per_window": 70,
+    "endpoint_max_requests_per_window": 80,
+    "user_endpoint_requests_per_window": 50
+  },
+  "environment_variables":{
+    "starting_working_hours": 9,
+    "ending_working_hours": 21
+  },
+  "cost_endpoints":{
+      "/service/rest/auth": 2,
+      "/service/rest/building/*": 2,
+      "/service/rest/building/*/sensors": 2,
+      "/service/rest/building/*/demands": 2,
+      "/service/rest/building/*/demand/last": 2,
+      "/service/rest/building/*/demand/last_n_minutes": 2,
+      "/service/rest/building/*/consumption": 2,
+      "/service/rest/building/*/demandReport": 2,
+      "/service/rest/building/*/consumption/disaggregated": 1,
+      "/service/rest/sensors": 2,
+      "/service/rest/sensor/*": 2,
+      "/service/rest/consumptionHistory": 2,
+      "/service/rest/building/*/statistics": 2,
+      "/service/rest/sensor/*/statistics": 2,
+      "/service/rest/building/*/statisticsStatus": 2,
+      "/service/rest/building/*/periodStatisticsStatus": 2,
+      "/service/rest/building/*/statistics/alwayson": 2,
+      "/service/rest/user/*/sensors": 2
+  },
+  "whitelisted_endpoints": [
+    "/service/rest/auth"
+  ],
+  "projects_config": {
+    "default": {
+      "budget": 200,
+      "night_budget": 0
+    },
+    "spiffe://acme.com/admin": {
+      "budget": 200,
+      "night_budget": 300
+    },
+    "spiffe://acme.com/projeto1": {
+      "budget": 200,
+      "night_budget": 0
+    },
+    "spiffe://acme.com/projeto2": {
+      "budget": 300,
+      "night_budget": 300
+    },
+    "spiffe://acme.com/projeto3": {
+      "budget": 200,
+      "night_budget": 0
+    },
+    "unauthenticated": {
+      "budget": 200,
+      "night_budget": 0
+    }
+  },
+  "building_svc": [
+    "spiffe://acme.com/projeto1", 
+    "spiffe://acme.com/projeto2",
+    "unauthenticated"
+  ],
+  "consumption_svc": [
+    "spiffe://acme.com/projeto3"
+  ],
+  "unsupported_svc": [
+    "spiffe://acme.com/projeto1",
+    "spiffe://acme.com/projeto2",
+    "spiffe://acme.com/projeto3"
+  ],
+  "sensor_svc": [
+    "spiffe://acme.com/projeto1",
+    "spiffe://acme.com/projeto2"
+  ],
+  "statistics_svc": [
+    "spiffe://acme.com/projeto1",
+    "spiffe://acme.com/projeto2",
+    "spiffe://acme.com/projeto3"
+  ],
+  "user_svc": [
+    "spiffe://acme.com/projeto1",
+    "spiffe://acme.com/projeto2"
+  ],
+  "anomalies":{
+    "users": []
+  }
+}
