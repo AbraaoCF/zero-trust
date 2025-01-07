@@ -1,17 +1,17 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#	 		OPA Policy with Zero Trust Approach 		  #
-# 			 	Fine Grained Access Control				  #
-# 			Author: Abraão Caiana de Freitas   		 	  #
-#				(github.com/AbraaoCF) 				  	  #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #	# #
-# This policy is responsible for the fine-grained access  #
-# control of the API Gateway. It is responsible for       #
-# authorizing the requests based on the path and the      #
-# client's SPIFFE ID.									  #
-#														  #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #	# #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+#	 		OPA Policy with Zero Trust Approach 		  
+# 			 	Fine Grained Access Control				  
+# 			Author: Abraão Caiana de Freitas   		 	  
+#				(github.com/AbraaoCF) 				  	  
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #	# 
+# This policy is responsible for the fine-grained access  
+# control of the API Gateway. It is responsible for       
+# authorizing the requests based on the path and the      
+# client's SPIFFE ID.									  
+#														  
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #	# 
 
-package envoy.authz
+package authz
 
 import rego.v1
 
@@ -131,35 +131,35 @@ allow_path := endpoint if {
 	endpoint := `/service/rest/user/*/sensors`
 }
 
-svc_spiffe_id := client_id if {
+svc_principal := client_id if {
 	client_id := input.attributes.source.principal
 }
 
-svc_spiffe_id := client_id if {
+svc_principal := client_id if {
 	not	input.attributes.source.principal
 	client_id := "unauthenticated"
 }
 
 check_id_building if {
-	svc_spiffe_id in data.building_svc
+	svc_principal in data.building_svc
 }
 
 check_id_unsupported if {
-	svc_spiffe_id in data.unsupported_svc
+	svc_principal in data.unsupported_svc
 }
 
 check_id_consumption if {
-	svc_spiffe_id in data.consumption_svc
+	svc_principal in data.consumption_svc
 }
 
 check_id_sensor if {
-	svc_spiffe_id in data.sensor_svc
+	svc_principal in data.sensor_svc
 }
 
 check_id_statistics if {
-	svc_spiffe_id in data.statistics_svc
+	svc_principal in data.statistics_svc
 }
 
 check_id_user if {
-	svc_spiffe_id in data.user_svc
+	svc_principal in data.user_svc
 }

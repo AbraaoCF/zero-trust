@@ -12,4 +12,5 @@ CMD ["run", "-s",\
      "--tls-ca-cert-file", "tls/ca.pem", \
      "--authentication=tls", \
      "-a", ":8181" , \
+     "--set=plugins.envoy_ext_authz_grpc.path=authz/allow", \
      "--set=plugins.envoy_ext_authz_grpc.addr=:9002"]

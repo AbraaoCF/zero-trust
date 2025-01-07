@@ -1,0 +1,26 @@
+services:
+  webdis:
+    image: nicolas/webdis:latest
+
+  envoy:
+    image: envoyproxy/envoy:v1.31.0
+    ports:
+      - "10000:10000"
+      - "9901:9901"
+    volumes:
+      - envoy.yaml:/etc/envoy/envoy.yaml
+      - ./commom/certs:/etc/envoy/tls
+
+  service:
+    image: hashicorp/http-echo:1.0.0
+    command: ["-text=Hello, world!"]
+
+  ext_authz-opa-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.opa
+    volumes:
+      - ./opa-policies:/app/policies
+      - ./commom/certs:/app/tls
+
+

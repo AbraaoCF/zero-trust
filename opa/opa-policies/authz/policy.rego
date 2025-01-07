@@ -1,20 +1,20 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#	 		OPA Policy with Zero Trust Approach 		  #
-# 					  Rate Limiting 				  	  #
-# 			Author: Abraão Caiana de Freitas   		 	  #
-#					(github.com/AbraaoCF) 		    	  #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #	# #
-#  Features of this policy are:				              #
-#														  #
-#  - Rate Limiting with Budget (enabled by default)		  #
-#														  #
-#  - Night Budget Evaluation (disabled by default) 	  	  #
-# 		To enable, the specific project configuration     #
-#		must set the night_budget attribute != 0		  #
-#														  #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#	 		OPA Policy with Zero Trust Approach 		 
+# 					  Rate Limiting 				  	 
+# 			Author: Abraão Caiana de Freitas   		 	 
+#					(github.com/AbraaoCF) 		    	 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #	#
+#  Features of this policy are:				             
+#														 
+#  - Rate Limiting with Budget (enabled by default)		 
+#														 
+#  - Night Budget Evaluation (disabled by default) 	  	 
+# 		To enable, the specific project configuration    
+#		must set the night_budget attribute != 0		 
+#														 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-package envoy.authz
+package authz
 
 import rego.v1
 
@@ -28,7 +28,7 @@ rate_limit_user_endpoint := data.rate_limits_config.user_endpoint_requests_per_w
 
 environment_variables := data.environment_variables
 
-project_config := map_project_config(data.projects_config, svc_spiffe_id)
+project_config := map_project_config(data.projects_config, svc_principal)
 
 script := `
 local set1 = KEYS[1]
@@ -75,11 +75,11 @@ inside_working_hours if {
 default allow := false
 
 allow := response if {
-	svc_spiffe_id == "spiffe://acme.com/admin"
+	svc_principal == "spiffe://acme.com/admin"
 	response := {
 		"allowed": true,
 		"headers": {"x-ext-authz-check": "allowed"},
-		"id": svc_spiffe_id,
+		"id": svc_principal,
 		"request_costs": -1,
 		"budget_left": -1,
 	}
@@ -92,7 +92,7 @@ allow := response if {
 	response := {
 		"allowed": true,
 		"headers": {"x-ext-authz-check": "allowed"},
-		"id": svc_spiffe_id,
+		"id": svc_principal,
 		"request_costs": 0,
 		"budget_left": -1,
 	}
@@ -101,7 +101,7 @@ allow := response if {
 allow := response if {
 	http_request.method == "GET"
 	endpoint := allow_path
-	user := svc_spiffe_id
+	user := svc_principal
 	not user in data.anomalies.users
 	request_info := process_request_budget(user, endpoint)
     response = choose_response(request_info, user)
