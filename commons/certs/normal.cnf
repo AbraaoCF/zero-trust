@@ -8,11 +8,11 @@ C = BR
 ST = Paraiba
 L = Campina Grande
 O = Universidade Federal de Campina Grande
-OU = TCC
-CN = normal.dhsg.com
+OU = UFCG
+CN = normal.zt.local
 
 [ v3_req ]
 subjectAltName = @alt_names
 
 [ alt_names ]
-URI = spiffe://dhsg.com/normal
+URI = spiffe://zt.local/normal

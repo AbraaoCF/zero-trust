@@ -9,10 +9,10 @@ ST = Paraiba
 L = Campina Grande
 O = Universidade Federal de Campina Grande
 OU = UFCG
-CN = anomalous.zt.local
+CN = opa.zt.local
 
 [ v3_req ]
 subjectAltName = @alt_names
 
 [ alt_names ]
-URI = spiffe://zt.local/anomalous
+DNS.1 = opa.zt.local

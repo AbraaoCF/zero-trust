@@ -8,12 +8,11 @@ C = BR
 ST = Paraiba
 L = Campina Grande
 O = Universidade Federal de Campina Grande
-OU = TCC
-CN = envoy.dhsg.com
+OU = UFCG
+CN = envoy.zt.local
 
 [ v3_req ]
 subjectAltName = @alt_names
 
 [ alt_names ]
-DNS.1 = envoy.dhsg.com
-DNS.2 = localhost
+DNS.1 = envoy.zt.local

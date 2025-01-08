@@ -10,8 +10,8 @@ C  = BR
 ST = Paraiba
 L  = Campina Grande
 O  = Universidade Federal de Campina Grande
-OU = TCC
-CN = dhsg.com # Trust domain
+OU = UFCG
+CN = zt.local # Trust domain
 
 [ v3_ca ]
 subjectKeyIdentifier    = hash
@@ -20,4 +20,4 @@ keyUsage                = critical, Certificate Sign, CRL Sign
 subjectAltName          = @alt_names
 
 [ alt_names ]
-DNS.1 = dhsg.com
+DNS.1 = zt.local
