@@ -1,0 +1,25 @@
+services:
+  # Envoy
+  envoy:
+    container_name: envoy
+    image: envoyproxy/envoy:contrib-v1.29.1
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+      - ../certs/envoy.crt:/etc/envoy/certs/envoy.crt
+      - ../certs/envoy.key:/etc/envoy/certs/envoy.key
+      - ../certs/ca.crt:/etc/envoy/certs/ca.crt
+    ports:
+      - "7379:7379"
+    command: ["envoy", "-c", "/etc/envoy/envoy.yaml", "-l", "info"]
+    depends_on:
+      - state-storage
+    networks:
+      - state-storage 
+  # State Storage (Webdis + Redis)
+  state-storage:
+    container_name: state-storage
+    image: nicolas/webdis:0.1.22
+    networks:
+      - state-storage
+networks:
+  state-storage:
