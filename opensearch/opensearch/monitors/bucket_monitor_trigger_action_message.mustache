@@ -1,0 +1,29 @@
+{
+  "alerts": [
+    {{#ctx.newAlerts}}
+    {
+      "type" : "bucket",
+      "key": "{{bucket_keys}}",
+      "monitor_name": "{{ctx.monitor.name}}",
+      "trigger_name": "{{ctx.trigger.name}}",
+      "trigger_severity": {{ctx.trigger.severity}},
+      "period_start": "{{ctx.periodStart}}",
+      "period_end": "{{ctx.periodEnd}}",
+      "global_scope": false
+    },
+    {{/ctx.newAlerts}}
+    {{#ctx.dedupedAlerts}}
+    {
+      "type" : "bucket",
+      "key": "{{bucket_keys}}",
+      "monitor_name": "{{ctx.monitor.name}}",
+      "trigger_name": "{{ctx.trigger.name}}",
+      "trigger_severity": {{ctx.trigger.severity}},
+      "period_start": "{{ctx.periodStart}}",
+      "period_end": "{{ctx.periodEnd}}",
+      "global_scope": false
+    },
+    {{/ctx.dedupedAlerts}}
+    null
+  ]
+}
