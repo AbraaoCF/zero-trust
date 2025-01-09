@@ -9,10 +9,11 @@ ST = Paraiba
 L = Campina Grande
 O = Universidade Federal de Campina Grande
 OU = UFCG
-CN = envoy.zt.local
+CN = envoy-state-storage.zt.local
 
 [ v3_req ]
 subjectAltName = @alt_names
 
 [ alt_names ]
-DNS.1 = envoy.zt.local
+DNS.1 = envoy-state-storage.zt.local
+DNS.2 = state-storage.zt.local

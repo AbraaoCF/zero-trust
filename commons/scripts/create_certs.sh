@@ -15,10 +15,15 @@ openssl req -new -key opa.key -out opa.csr -config opa.cnf
 openssl x509 -req -in opa.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out opa.crt -days 365 -sha256 -extensions v3_req -extfile opa.cnf
 #openssl x509 -in opa.crt -text -noout
 
-# Envoy
-openssl genrsa -out envoy.key 4096
-openssl req -new -key envoy.key -out envoy.csr -config envoy.cnf
-openssl x509 -req -in envoy.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out envoy.crt -days 365 -sha256 -extensions v3_req -extfile envoy.cnf
+# Envoy - Service
+openssl genrsa -out envoy-service.key 4096
+openssl req -new -key envoy-service.key -out envoy-service.csr -config envoy-service.cnf
+openssl x509 -req -in envoy-service.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out envoy-service.crt -days 365 -sha256 -extensions v3_req -extfile envoy-service.cnf
+
+# Envoy - State Storage
+openssl genrsa -out envoy-ss.key 4096
+openssl req -new -key envoy-ss.key -out envoy-ss.csr -config envoy-ss.cnf
+openssl x509 -req -in envoy-ss.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out envoy-ss.crt -days 365 -sha256 -extensions v3_req -extfile envoy-ss.cnf
 #openssl x509 -in envoy.crt -text -noout
 
 # Normal

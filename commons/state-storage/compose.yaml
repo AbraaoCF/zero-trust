@@ -2,11 +2,11 @@ services:
   # Envoy
   envoy:
     container_name: envoy
-    image: envoyproxy/envoy:contrib-v1.29.1
+    image: envoyproxy/envoy:distroless-v1.32.3
     volumes:
       - ./envoy.yaml:/etc/envoy/envoy.yaml
-      - ../certs/envoy.crt:/etc/envoy/certs/envoy.crt
-      - ../certs/envoy.key:/etc/envoy/certs/envoy.key
+      - ../certs/envoy.crt:/etc/envoy/certs/envoy-ss.crt
+      - ../certs/envoy.key:/etc/envoy/certs/envoy-ss.key
       - ../certs/ca.crt:/etc/envoy/certs/ca.crt
     ports:
       - "7379:7379"
