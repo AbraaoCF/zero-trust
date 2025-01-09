@@ -46,12 +46,12 @@ static_resources:
               common_tls_context:
                 tls_certificates:
                   - certificate_chain:
-                      filename: "/etc/envoy/tls/server-cert.pem"
+                      filename: "/etc/envoy/tls/envoy-service.crt"
                     private_key:
-                      filename: "/etc/envoy/tls/server-key.pem"
+                      filename: "/etc/envoy/tls/envoy-service.key"
                 validation_context:
                   trusted_ca:
-                    filename: "/etc/envoy/tls/ca.pem"
+                    filename: "/etc/envoy/tls/ca.crt"
 
   clusters:
     - name: service_cluster
@@ -83,7 +83,7 @@ static_resources:
                 socket_address:
                   address: ext_authz-opa-service
                   port_value: 9002
-
+admin:
   access_log_path: "/dev/null"
   address:
     socket_address:

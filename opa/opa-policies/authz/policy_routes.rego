@@ -17,6 +17,13 @@ import rego.v1
 
 route := http_request.path
 
+# Load Test
+allow_path := endpoint if {
+	glob.match(`/items`, ["/"], route)
+	check_id_load_test
+	endpoint := `/items`
+}
+
 # Auth
 allow_path := endpoint if {
 	glob.match(`/service/rest/auth`, ["/"], route)
@@ -138,6 +145,10 @@ svc_principal := client_id if {
 svc_principal := client_id if {
 	not	input.attributes.source.principal
 	client_id := "unauthenticated"
+}
+
+check_id_load_test if {
+	svc_principal in data.load_test_svc
 }
 
 check_id_building if {

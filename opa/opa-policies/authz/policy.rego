@@ -120,6 +120,7 @@ choose_response(request_info, user) = response if {
 	log_request_budget(request_info.user_id_budget, now, request_info.cost_request)
 }
 
+
 choose_response(request_info, user) = response if {
     request_info.exceed_budget
     response := {
@@ -131,6 +132,7 @@ choose_response(request_info, user) = response if {
         "budget_left": request_info.budget_left,
     }
 }
+
 
 process_request_budget(user, endpoint) = response if {
     user_id_budget := sprintf("%s/budget", [user])
@@ -154,23 +156,21 @@ client_key := data.certs.client_key
 request_logs_cost(id, budget, window_start) := total_cost if {
 	encoded_id := urlquery.encode(id)
 	encoded_script := urlquery.encode(script)
-	print(sprintf("https://envoy:10004/EVAL/%s/2/%s/%.5f", [encoded_script, encoded_id, window_start]))
 	redisl := http.send({
 		"method": "GET",
-		"url": sprintf("https://envoy:10004/EVAL/%s/2/%s/%.5f", [encoded_script, encoded_id, window_start]),
+		"url": sprintf("https://state-storage:7379/EVAL/%s/2/%s/%.5f", [encoded_script, encoded_id, window_start]),
 		"tls_ca_cert": ca_cert,
 		"tls_client_cert": client_cert,
 		"tls_client_key": client_key,
 	})
 	total_cost := to_number(redisl.body.EVAL)
-	print(total_cost)
 }
 
 
 log_request_budget(id, timestamp, value) if {
 	http.send({
 		"method": "GET",
-		"url": sprintf("https://envoy:10004/ZINCRBY/%s/%v/%.5f", [urlquery.encode(id), value, timestamp]),
+		"url": sprintf("https://state-storage:7379/ZINCRBY/%s/%v/%.5f", [urlquery.encode(id), value, timestamp]),
 		"headers": {"Content-Type": "application/json"},
 		"tls_ca_cert": ca_cert,
 		"tls_client_cert": client_cert,

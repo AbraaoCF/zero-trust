@@ -27,13 +27,23 @@
       "/service/rest/building/*/statisticsStatus": 2,
       "/service/rest/building/*/periodStatisticsStatus": 2,
       "/service/rest/building/*/statistics/alwayson": 2,
-      "/service/rest/user/*/sensors": 2
+      "/service/rest/user/*/sensors": 2,
+
+      "/items": 0
   },
   "whitelisted_endpoints": [
     "/service/rest/auth"
   ],
   "projects_config": {
     "default": {
+      "budget": 200,
+      "night_budget": 0
+    },
+    "spiffe://zt.local/normal": {
+      "budget": 200,
+      "night_budget": 0
+    },
+    "spiffe://zt.local/anomalous": {
       "budget": 200,
       "night_budget": 0
     },
@@ -58,6 +68,10 @@
       "night_budget": 0
     }
   },
+  "load_test_svc": [
+    "spiffe://zt.local/anomalous",
+    "spiffe://zt.local/normal"
+  ],
   "building_svc": [
     "spiffe://acme.com/projeto1", 
     "spiffe://acme.com/projeto2",

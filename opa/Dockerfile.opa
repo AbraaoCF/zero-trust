@@ -1,4 +1,4 @@
-FROM openpolicyagent/opa:latest-envoy
+FROM openpolicyagent/opa:1.0.0-envoy-3
 
 WORKDIR /app
 
@@ -7,9 +7,9 @@ CMD ["run", "-s",\
      "policies", \
      "--log-level", "debug", \
      "--log-format", "json-pretty", \
-     "--tls-cert-file", "tls/server-cert.pem", \
-     "--tls-private-key-file", "tls/server-key.pem", \
-     "--tls-ca-cert-file", "tls/ca.pem", \
+     "--tls-cert-file", "tls/opa.crt", \
+     "--tls-private-key-file", "tls/opa.key", \
+     "--tls-ca-cert-file", "tls/ca.crt", \
      "--authentication=tls", \
      "-a", ":8181" , \
      "--set=plugins.envoy_ext_authz_grpc.path=authz/allow", \
