@@ -9,7 +9,7 @@ services:
       - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
       - ./fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf
       - ./fluent-bit/envoy.conf:/fluent-bit/etc/envoy.conf
-      - ./certs/ca.crt:/fluent-bit/opt/certs/ca.crt
+      - ../../commons/certs/ca.crt:/fluent-bit/opt/certs/ca.crt
     networks:
       - envoy-service
   # Envoy

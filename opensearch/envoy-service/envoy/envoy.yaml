@@ -159,7 +159,6 @@ static_resources:
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
           sni: opensearch.zt.local
-          require_client_certificate: true
           common_tls_context:
             tls_certificates:
               - certificate_chain:
@@ -186,7 +185,6 @@ static_resources:
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
           sni: opensearch.zt.local
-          require_client_certificate: true
           common_tls_context:
             validation_context:
               trusted_ca:
