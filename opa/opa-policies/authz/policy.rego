@@ -147,21 +147,21 @@ process_request_budget(user, endpoint) = response if {
     }
 }
 
-ca_cert := data.certs.ca_cert
+ca_cert := "tls/ca.crt"
 
-client_cert := data.certs.client_cert
+client_cert := "tls/opa.crt"
 
-client_key := data.certs.client_key
+client_key := "tls/opa.key"
 
 request_logs_cost(id, budget, window_start) := total_cost if {
 	encoded_id := urlquery.encode(id)
 	encoded_script := urlquery.encode(script)
 	redisl := http.send({
 		"method": "GET",
-		"url": sprintf("https://state-storage:7379/EVAL/%s/2/%s/%.5f", [encoded_script, encoded_id, window_start]),
-		"tls_ca_cert": ca_cert,
-		"tls_client_cert": client_cert,
-		"tls_client_key": client_key,
+		"url": sprintf("https://state-storage.zt.local:7379/EVAL/%s/2/%s/%.5f", [encoded_script, encoded_id, window_start]),
+		"tls_ca_cert_file": ca_cert,
+		"tls_client_cert_file": client_cert,
+		"tls_client_key_file": client_key,
 	})
 	total_cost := to_number(redisl.body.EVAL)
 }
@@ -170,10 +170,10 @@ request_logs_cost(id, budget, window_start) := total_cost if {
 log_request_budget(id, timestamp, value) if {
 	http.send({
 		"method": "GET",
-		"url": sprintf("https://state-storage:7379/ZINCRBY/%s/%v/%.5f", [urlquery.encode(id), value, timestamp]),
+		"url": sprintf("https://state-storage.zt.local:7379/ZINCRBY/%s/%v/%.5f", [urlquery.encode(id), value, timestamp]),
 		"headers": {"Content-Type": "application/json"},
-		"tls_ca_cert": ca_cert,
-		"tls_client_cert": client_cert,
-		"tls_client_key": client_key,
+		"tls_ca_cert_file": ca_cert,
+		"tls_client_cert_file": client_cert,
+		"tls_client_key_file": client_key,
 	})
 }
