@@ -5,12 +5,11 @@ services:
     image: envoyproxy/envoy:distroless-v1.32.3
     volumes:
       - ./envoy.yaml:/etc/envoy/envoy.yaml
-      - ../certs/envoy.crt:/etc/envoy/certs/envoy-ss.crt
-      - ../certs/envoy.key:/etc/envoy/certs/envoy-ss.key
+      - ../certs/envoy-ss.crt:/etc/envoy/certs/envoy.crt
+      - ../certs/envoy-ss.key:/etc/envoy/certs/envoy.key
       - ../certs/ca.crt:/etc/envoy/certs/ca.crt
     ports:
       - "7379:7379"
-    command: ["envoy", "-c", "/etc/envoy/envoy.yaml", "-l", "info"]
     depends_on:
       - state-storage
     networks:
