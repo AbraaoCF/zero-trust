@@ -1,0 +1,6 @@
+services:
+  envoy-service:
+    image: envoyproxy/envoy:v1.32.3
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+      - ../../commons/certs:/etc/envoy/tls

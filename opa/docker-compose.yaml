@@ -1,18 +1,4 @@
 services:
-  webdis:
-    image: nicolas/webdis:latest
-    ports:
-      - "7379:7379"
-  envoy:
-    image: envoyproxy/envoy:v1.32.3
-    volumes:
-      - ./envoy.yaml:/etc/envoy/envoy.yaml
-      - ../commons/certs:/etc/envoy/tls
-
-  service:
-    image: hashicorp/http-echo:1.0.0
-    command: ["-text=Hello, world!"]
-
   ext_authz-opa-service:
     build:
       context: .
