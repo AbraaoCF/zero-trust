@@ -2,7 +2,7 @@ JSON = (loadfile("/var/lib/lua/JSON.lua"))()
 
 STATE_STORAGE_CLUSTER = "state-storage"
 OS_CLUSTER = "opensearch"
-OS_TOKEN = "YWRtaW46QmtLOFsoU2RKKiwjJkc0Zw=="
+OS_TOKEN = "YWRtaW46YWRtaW4="
 ALERT_INDEX = "envoy_alerts"
 GLOBAL_KEY = "global"
 

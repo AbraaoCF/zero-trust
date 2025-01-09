@@ -46,4 +46,3 @@ networks:
 
 volumes:
   opensearch-data:
-    external: true

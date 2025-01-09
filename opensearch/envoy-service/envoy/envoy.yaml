@@ -142,21 +142,6 @@ static_resources:
     - name: service
       connect_timeout: 0.25s
       type: STRICT_DNS
-      transport_socket:
-        name: envoy.transport_sockets.tls
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-          sni: service.zt.local
-          require_client_certificate: true
-          common_tls_context:
-            tls_certificates:
-              - certificate_chain:
-                  filename: "/etc/envoy/certs/envoy.crt"
-                private_key:
-                  filename: "/etc/envoy/certs/envoy.key"
-            validation_context:
-              trusted_ca:
-                filename: "/etc/envoy/certs/ca.crt"
       load_assignment:
         cluster_name: api
         endpoints:
