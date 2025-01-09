@@ -1,6 +1,6 @@
 JSON = (loadfile("/var/lib/lua/JSON.lua"))()
 
-WEBDIS_CLUSTER = "webdis"
+STATE_STORAGE_CLUSTER = "state-storage"
 GLOBAL_KEY = "global"
 WINDOW_SIZE = 300 -- in seconds
 PENALTY_LIMIT = 3
@@ -66,10 +66,10 @@ function envoy_on_request(request_handle)
 		.. "/"
 		.. start
 
-	local headers, body = request_handle:httpCall(WEBDIS_CLUSTER, {
+	local headers, body = request_handle:httpCall(STATE_STORAGE_CLUSTER, {
 		[":method"] = "GET",
 		[":path"] = path,
-		[":authority"] = WEBDIS_CLUSTER,
+		[":authority"] = STATE_STORAGE_CLUSTER,
 	}, "", 1000)
 
 	local response = {

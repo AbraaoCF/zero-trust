@@ -216,3 +216,31 @@ Ensure the certificate was created correctly:
 ```bash
 openssl x509 -in anomalous.crt -text -noout
 ```
+
+## 8. Create a Certificate for Anomalous
+
+### 8.1. Generate the Private Key for Anomalous
+
+```bash
+openssl genrsa -out service.key 4096
+```
+
+### 8.2. Create the CSR (Certificate Signing Request)
+
+See `service.cnf` file before creating the CSR, and change where is needed.
+
+```bash
+openssl req -new -key service.key -out service.csr -config service.cnf
+```
+
+### 8.3. Sign the CSR with the CA
+
+```bash
+openssl x509 -req -in service.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out service.crt -days 365 -sha256 -extensions v3_req -extfile service.cnf
+```
+
+Ensure the certificate was created correctly:
+
+```bash
+openssl x509 -in service.crt -text -noout
+```

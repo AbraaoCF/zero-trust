@@ -1,6 +1,6 @@
 JSON = (loadfile("/var/lib/lua/JSON.lua"))()
 
-WEBDIS_CLUSTER = "webdis"
+STATE_STORAGE_CLUSTER = "state-storage"
 OS_CLUSTER = "opensearch"
 OS_TOKEN = "YWRtaW46QmtLOFsoU2RKKiwjJkc0Zw=="
 ALERT_INDEX = "envoy_alerts"
@@ -52,10 +52,10 @@ function envoy_on_request(request_handle)
 
 		local start = alert.period_end
 
-		request_handle:httpCall(WEBDIS_CLUSTER, {
+		request_handle:httpCall(STATE_STORAGE_CLUSTER, {
 			[":method"] = "GET",
 			[":path"] = "/ZINCRBY/" .. key .. "/" .. penalty .. "/" .. start,
-			[":authority"] = WEBDIS_CLUSTER,
+			[":authority"] = STATE_STORAGE_CLUSTER,
 		}, "", 1000)
 
 		-- sending alert to opensearch

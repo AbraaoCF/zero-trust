@@ -1,0 +1,11 @@
+services:
+  # Service
+  service:
+    container_name: service
+    build: .
+    environment:
+      DB_PATH: /var/lib/api/items.db
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./items.db:/var/lib/api/items.db

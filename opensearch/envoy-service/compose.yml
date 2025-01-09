@@ -1,0 +1,41 @@
+services:
+  # Fluent bit
+  fluent-bit:
+    image: fluent/fluent-bit:3.1.6
+    container_name: fluent-bit
+    ports:
+      - "24224:24224"
+    volumes:
+      - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf
+      - ./fluent-bit/envoy.conf:/fluent-bit/etc/envoy.conf
+      - ./certs/ca.crt:/fluent-bit/opt/certs/ca.crt
+    networks:
+      - envoy-service
+  # Envoy
+  envoy-service:
+    container_name: envoy-service
+    image: envoyproxy/envoy:distroless-v1.32.3
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+      - ./envoy/lua/access_control.lua:/etc/lua/access_control.lua
+      - ./envoy/lua/alert.lua:/etc/lua/alert.lua
+      - ./envoy/lua/lib:/var/lib/lua
+      - ../../commons/certs/envoy-service.crt:/etc/envoy/certs/envoy.crt
+      - ../../commons/certs/envoy-service.key:/etc/envoy/certs/envoy.key
+      - ../../commons/certs/ca.crt:/etc/envoy/certs/ca.crt
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+        tag: envoy
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    depends_on:
+      - fluent-bit
+    networks:
+      - envoy-service
+
+networks:
+  envoy-service:
