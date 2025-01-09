@@ -16,4 +16,4 @@ subjectAltName = @alt_names
 
 [ alt_names ]
 DNS.1 = envoy-service.zt.local
-DNS.2 = service.zt.local
+DNS.2 = envoy.zt.local
