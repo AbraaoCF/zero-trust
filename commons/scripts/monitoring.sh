@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPENSEARCH_URL="https://localhost:9200"
+OPENSEARCH_URL="https://opensearch.zt.local:9200"
 OPENSEARCH_INDEX="containers"
 INTERVAL=10
 
