@@ -5,7 +5,7 @@ OPENSEARCH_INDEX="containers"
 INTERVAL=10
 
 OPENSEARCH_USER="admin"
-OPENSEARCH_PASS="BkK8[(SdJ*,#&G4g"
+OPENSEARCH_PASS="admin"
 
 CONTAINERS="dummy-api envoy webdis"
 
