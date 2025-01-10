@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.opa
+    ports:
+    - "9002:9002"
     volumes:
       - ./opa-policies:/app/policies
       - ../commons/certs:/app/tls
