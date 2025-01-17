@@ -32,6 +32,8 @@ project_config := map_project_config(data.projects_config, svc_principal)
 script := `
 local set1 = KEYS[1]
 local start = KEYS[2]
+local set1_cost = tonumber(KEYS[3])
+local current = KEYS[4]
 
 redis.call("ZREMRANGEBYLEX", set1, "[0", "(" .. start)
 
@@ -41,6 +43,8 @@ local set1_sum = 0
 for i = 2, #set1_members, 2 do
     set1_sum = set1_sum + tonumber(set1_members[i])
 end
+
+redis.call("ZINCRBY", set1, set1_cost, current)
 
 return set1_sum
 `
@@ -122,7 +126,7 @@ choose_response(request_info, user) = response if {
         "request_costs": request_info.cost_request,
         "quotas_left": request_info.quotas_left,
     }
-	log_request_quotas(request_info.user_id_quotas, now, request_info.cost_request)
+	# log_request_quotas(request_info.user_id_quotas, now, request_info.cost_request)
 }
 
 
@@ -141,7 +145,7 @@ choose_response(request_info, user) = response if {
 
 process_request_quotas(user, endpoint) = response if {
     user_id_quotas := sprintf("%s/quotas", [user])
-    cost_logs := request_logs_cost(user_id_quotas, user_quotas, window_start)
+    cost_logs := request_logs_cost(user_id_quotas, user_quotas, window_start, endpoint)
     cost_request := data.cost_endpoints[endpoint]
     response := {
         "user_id_quotas": user_id_quotas,
@@ -158,12 +162,13 @@ client_cert := "tls/opa.crt"
 
 client_key := "tls/opa.key"
 
-request_logs_cost(id, quotas, window_start) := total_cost if {
+request_logs_cost(id, quotas, window_start, endpoint) := total_cost if {
 	encoded_id := urlquery.encode(id)
 	encoded_script := urlquery.encode(script)
+	cost_request := data.cost_endpoints[endpoint]
 	redisl := http.send({
 		"method": "GET",
-		"url": sprintf("https://state-storage.zt.local:7379/EVAL/%s/2/%s/%.5f", [encoded_script, encoded_id, window_start]),
+		"url": sprintf("https://state-storage.zt.local:7379/EVAL/%s/2/%s/%.5f/%v/%.5f", [encoded_script, encoded_id, window_start, cost_request, now]),
 		"tls_ca_cert_file": ca_cert,
 		"tls_client_cert_file": client_cert,
 		"tls_client_key_file": client_key,
@@ -172,13 +177,13 @@ request_logs_cost(id, quotas, window_start) := total_cost if {
 }
 
 
-log_request_quotas(id, timestamp, value) if {
-	http.send({
-		"method": "GET",
-		"url": sprintf("https://state-storage.zt.local:7379/ZINCRBY/%s/%v/%.5f", [urlquery.encode(id), value, timestamp]),
-		"headers": {"Content-Type": "application/json"},
-		"tls_ca_cert_file": ca_cert,
-		"tls_client_cert_file": client_cert,
-		"tls_client_key_file": client_key,
-	})
-}
+# log_request_quotas(id, timestamp, value) if {
+# 	http.send({
+# 		"method": "GET",
+# 		"url": sprintf("https://state-storage.zt.local:7379/ZINCRBY/%s/%v/%.5f", [urlquery.encode(id), value, timestamp]),
+# 		"headers": {"Content-Type": "application/json"},
+# 		"tls_ca_cert_file": ca_cert,
+# 		"tls_client_cert_file": client_cert,
+# 		"tls_client_key_file": client_key,
+# 	})
+# }
