@@ -1,4 +1,3 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 #	 		OPA Policy with Zero Trust Approach 		  
 # 			 	Fine Grained Access Control				  
 # 			Author: Abraão Caiana de Freitas   		 	  
@@ -7,7 +6,7 @@
 # This policy is responsible for the fine-grained access  
 # control of the API Gateway. It is responsible for       
 # authorizing the requests based on the path and the      
-# client's SPIFFE ID.									  
+# client's Principal ID.									  
 #														  
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #	# 
 

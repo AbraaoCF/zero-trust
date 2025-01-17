@@ -1,4 +1,3 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #	 		OPA Policy with Zero Trust Approach 		 
 # 					  Rate Limiting 				  	 
 # 			Author: Abraão Caiana de Freitas   		 	 
@@ -6,11 +5,11 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #	#
 #  Features of this policy are:				             
 #														 
-#  - Rate Limiting with Budget (enabled by default)		 
+#  - Rate Limiting with Quotas (enabled by default)		 
 #														 
-#  - Night Budget Evaluation (disabled by default) 	  	 
+#  - Night Quotas Evaluation (disabled by default) 	  	 
 # 		To enable, the specific project configuration    
-#		must set the night_budget attribute != 0		 
+#		must set the afterHoursQuotas attribute != 0		 
 #														 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -56,21 +55,27 @@ now := time.now_ns() / 1000000000
 
 window_start := now - data.rate_limits_config.time_window_seconds
 
-user_budget := budget if {
+user_quotas := quotas if {
 	inside_working_hours
-	budget := project_config.budget
+	quotas := project_config.quotas
 }
 
-user_budget := budget if {
+user_quotas := quotas if {
 	not inside_working_hours
-	budget := project_config.night_budget
+	quotas := project_config.afterHoursQuotas
 }
 
 inside_working_hours if {
-	[hour, _, _] := time.clock(time.now_ns())
-	hour >= environment_variables.starting_working_hours
-	hour <= environment_variables.ending_working_hours
+    [hour, _, _] := time.clock(time.now_ns())
+    day := time.weekday(time.now_ns())
+
+    hour >= environment_variables.starting_working_hours
+    hour <= environment_variables.ending_working_hours
+
+    day >= 1
+    day <= 5
 }
+
 
 default allow := false
 
@@ -81,7 +86,7 @@ allow := response if {
 		"headers": {"x-ext-authz-check": "allowed"},
 		"id": svc_principal,
 		"request_costs": -1,
-		"budget_left": -1,
+		"quotas_left": -1,
 	}
 }
 
@@ -94,7 +99,7 @@ allow := response if {
 		"headers": {"x-ext-authz-check": "allowed"},
 		"id": svc_principal,
 		"request_costs": 0,
-		"budget_left": -1,
+		"quotas_left": -1,
 	}
 }
 
@@ -103,47 +108,47 @@ allow := response if {
 	endpoint := allow_path
 	user := svc_principal
 	not user in data.anomalies.users
-	request_info := process_request_budget(user, endpoint)
+	request_info := process_request_quotas(user, endpoint)
     response = choose_response(request_info, user)
 }
 
 
 choose_response(request_info, user) = response if {
-    not request_info.exceed_budget
+    not request_info.exceed_quotas
     response := {
         "allowed": true,
         "headers": {"x-ext-authz-check": "allowed"},
         "id": user,
         "request_costs": request_info.cost_request,
-        "budget_left": request_info.budget_left,
+        "quotas_left": request_info.quotas_left,
     }
-	log_request_budget(request_info.user_id_budget, now, request_info.cost_request)
+	log_request_quotas(request_info.user_id_quotas, now, request_info.cost_request)
 }
 
 
 choose_response(request_info, user) = response if {
-    request_info.exceed_budget
+    request_info.exceed_quotas
     response := {
         "allowed": false,
         "http_status": 429,
-        "headers": {"x-ext-authz-check": "denied", "x-ext-authz-error": "Budget exceeded"},
+        "headers": {"x-ext-authz-check": "denied", "x-ext-authz-error": "Quotas exceeded"},
         "id": user,
         "request_costs": request_info.cost_request,
-        "budget_left": request_info.budget_left,
+        "quotas_left": request_info.quotas_left,
     }
 }
 
 
-process_request_budget(user, endpoint) = response if {
-    user_id_budget := sprintf("%s/budget", [user])
-    cost_logs := request_logs_cost(user_id_budget, user_budget, window_start)
+process_request_quotas(user, endpoint) = response if {
+    user_id_quotas := sprintf("%s/quotas", [user])
+    cost_logs := request_logs_cost(user_id_quotas, user_quotas, window_start)
     cost_request := data.cost_endpoints[endpoint]
     response := {
-        "user_id_budget": user_id_budget,
+        "user_id_quotas": user_id_quotas,
         "cost_logs": cost_logs,
         "cost_request": cost_request,
-        "budget_left": user_budget - (cost_logs + cost_request),
-        "exceed_budget": cost_logs + cost_request > user_budget
+        "quotas_left": user_quotas - (cost_logs + cost_request),
+        "exceed_quotas": cost_logs + cost_request > user_quotas
     }
 }
 
@@ -153,7 +158,7 @@ client_cert := "tls/opa.crt"
 
 client_key := "tls/opa.key"
 
-request_logs_cost(id, budget, window_start) := total_cost if {
+request_logs_cost(id, quotas, window_start) := total_cost if {
 	encoded_id := urlquery.encode(id)
 	encoded_script := urlquery.encode(script)
 	redisl := http.send({
@@ -167,7 +172,7 @@ request_logs_cost(id, budget, window_start) := total_cost if {
 }
 
 
-log_request_budget(id, timestamp, value) if {
+log_request_quotas(id, timestamp, value) if {
 	http.send({
 		"method": "GET",
 		"url": sprintf("https://state-storage.zt.local:7379/ZINCRBY/%s/%v/%.5f", [urlquery.encode(id), value, timestamp]),

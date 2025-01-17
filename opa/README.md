@@ -31,9 +31,9 @@ Throughout this project, several key achievements were made in implementing a Ze
 
 Firstly, the motivation behind the project was addressed by leveraging advanced data management and analysis techniques by adopting ZTA principles and integrating OPA, the project aimed to ensure the protection of critical data from unauthorized access and misuse while maintaining flexibility for academic and research purposes.
 
- - **Rate limit with budget per user and endpoint cost**s: The project implemented a rate-limiting strategy that allocates CPU coins to users and associates costs with API endpoints. This approach ensures that users cannot exceed their allocated CPU resources within a defined time window, thereby preventing resource monopolization and maintaining system performance and stability.
+ - **Rate limit with quotas per user and endpoint cost**s: The project implemented a rate-limiting strategy that allocates CPU coins to users and associates costs with API endpoints. This approach ensures that users cannot exceed their allocated CPU resources within a defined time window, thereby preventing resource monopolization and maintaining system performance and stability.
 
- - **Environment-aware budget management**: To account for environmental aspects, a "night mode" feature was implemented to adjust project budgets based on working hours. Projects with higher throughput needs outside normal working hours can take advantage of reduced system load, while those with lower demand during these times are budget-restricted to prevent abnormal behavior.
+ - **Environment-aware quotas management**: To account for environmental aspects, a "night mode" feature was implemented to adjust project quotass based on working hours. Projects with higher throughput needs outside normal working hours can take advantage of reduced system load, while those with lower demand during these times are quotas-restricted to prevent abnormal behavior.
 
  - **Fine-grained access control**: The project implemented fine-grained access control policies based on SPIFFE IDs and API endpoints. By enforcing strict verification of identity and context, the system can prevent unauthorized access and misuse of resources, reducing the risk of security breaches and data loss.
 

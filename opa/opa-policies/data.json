@@ -36,36 +36,36 @@
   ],
   "projects_config": {
     "default": {
-      "budget": 200,
-      "night_budget": 0
+      "quotas": 200,
+      "afterHoursQuotas": 0
     },
     "spiffe://zt.local/normal": {
-      "budget": 200,
-      "night_budget": 0
+      "quotas": 200,
+      "afterHoursQuotas": 0
     },
     "spiffe://zt.local/anomalous": {
-      "budget": 200,
-      "night_budget": 0
+      "quotas": 200,
+      "afterHoursQuotas": 0
     },
     "spiffe://acme.com/admin": {
-      "budget": 200,
-      "night_budget": 300
+      "quotas": 200,
+      "afterHoursQuotas": 300
     },
     "spiffe://acme.com/projeto1": {
-      "budget": 200,
-      "night_budget": 0
+      "quotas": 200,
+      "afterHoursQuotas": 0
     },
     "spiffe://acme.com/projeto2": {
-      "budget": 300,
-      "night_budget": 300
+      "quotas": 300,
+      "afterHoursQuotas": 300
     },
     "spiffe://acme.com/projeto3": {
-      "budget": 200,
-      "night_budget": 0
+      "quotas": 200,
+      "afterHoursQuotas": 0
     },
     "unauthenticated": {
-      "budget": 200,
-      "night_budget": 0
+      "quotas": 200,
+      "afterHoursQuotas": 0
     }
   },
   "load_test_svc": [

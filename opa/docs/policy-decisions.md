@@ -9,15 +9,15 @@ The [policy_routes.rego](../policies/policy_routes.rego) file is designed to val
 
 To enhance security, we can add a more specific check for individual endpoints. This involves registering IDs for the endpoints in the [`data.json`](../opa-policies/data.json) file and incorporating an additional check within the respective function. This approach increases the granularity of the policy, ensuring more precise access control.
 
-## Rate Limit With User Budget and Endpoint Costs
+## Rate Limit With User Quotas and Endpoint Costs
 
-This approach recognizes that some endpoints are more CPU-intensive than others. To protect the system from users who might be unaware of the resource constraints, a **budget per user** strategy was implemented.
+This approach recognizes that some endpoints are more CPU-intensive than others. To protect the system from users who might be unaware of the resource constraints, a **quotas per user** strategy was implemented.
 
-### Budget Per User Strategy
+### Quotas Per User Strategy
 
 - **CPU Coins**: Each user is allocated a certain amount of **CPU coins** to spend within a defined time window.
 - **Endpoint Costs**: Each endpoint has an associated cost in **CPU coins**.
-- **Budget Management**: Every time a user calls a specific endpoint, their available budget decreases by the endpoint's cost. This ensures that users cannot exceed their allocated CPU resources within the time window.
+- **Quotas Management**: Every time a user calls a specific endpoint, their available quotas decreases by the endpoint's cost. This ensures that users cannot exceed their allocated CPU resources within the time window.
 
 By applying this strategy, the system can better manage CPU resources and prevent any single user from monopolizing CPU capacity, thereby maintaining overall system performance and stability.
 
@@ -25,10 +25,10 @@ By applying this strategy, the system can better manage CPU resources and preven
 
 To account for the environmental aspects of the infrastructure, a `night_mode` flag was created in the `projects_config` in [`data.json`](../opa-policies/data.json) to determine if a project has higher demand outside working hours.
 
-- **Outside Working Hours**: If `night_mode` is enabled and it is outside working hours, the project's budget increases by 20%.
-- **During Working Hours**: If `night_mode` is enabled and it is within working hours, the project's budget decreases to 70%.
+- **Outside Working Hours**: If `night_mode` is enabled and it is outside working hours, the project's quotas increases by 20%.
+- **During Working Hours**: If `night_mode` is enabled and it is within working hours, the project's quotas decreases to 70%.
 
-This ensures that projects with higher throughput needs outside of normal working hours can take advantage of the reduced system load, while those that do not require high demand during these times are budget-restricted to prevent abnormal behavior when no system administrator is available to monitor them.
+This ensures that projects with higher throughput needs outside of normal working hours can take advantage of the reduced system load, while those that do not require high demand during these times are quotas-restricted to prevent abnormal behavior when no system administrator is available to monitor them.
 
 ## Anomalies
 
