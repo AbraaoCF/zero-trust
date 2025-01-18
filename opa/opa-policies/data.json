@@ -12,21 +12,13 @@
   "cost_endpoints":{
       "/service/rest/auth": 2,
       "/service/rest/building/*": 2,
-      "/service/rest/building/*/sensors": 2,
       "/service/rest/building/*/demands": 2,
       "/service/rest/building/*/demand/last": 2,
       "/service/rest/building/*/demand/last_n_minutes": 2,
       "/service/rest/building/*/consumption": 2,
       "/service/rest/building/*/demandReport": 2,
       "/service/rest/building/*/consumption/disaggregated": 1,
-      "/service/rest/sensors": 2,
-      "/service/rest/sensor/*": 2,
       "/service/rest/consumptionHistory": 2,
-      "/service/rest/building/*/statistics": 2,
-      "/service/rest/sensor/*/statistics": 2,
-      "/service/rest/building/*/statisticsStatus": 2,
-      "/service/rest/building/*/periodStatisticsStatus": 2,
-      "/service/rest/building/*/statistics/alwayson": 2,
       "/service/rest/user/*/sensors": 2,
 
       "/items": 0

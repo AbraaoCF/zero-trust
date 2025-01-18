@@ -32,6 +32,7 @@ static_resources:
                       grpc_service:
                         envoy_grpc:
                           cluster_name: ext_authz-opa-service
+                        timeout: 1s
                       transport_api_version: V3
                       status_on_error:
                         code: 503
