@@ -4,12 +4,15 @@ services:
     container_name: envoy
     image: envoyproxy/envoy:distroless-v1.32.3
     volumes:
+      - ./lua/access_control.lua:/etc/lua/access_control.lua
+      - ./lua/lib:/var/lib/lua
       - ./envoy.yaml:/etc/envoy/envoy.yaml
       - ../certs/envoy-ss.crt:/etc/envoy/certs/envoy.crt
       - ../certs/envoy-ss.key:/etc/envoy/certs/envoy.key
       - ../certs/ca.crt:/etc/envoy/certs/ca.crt
     ports:
       - "7379:7379"
+      - "7378:7378"
     depends_on:
       - state-storage
     networks:

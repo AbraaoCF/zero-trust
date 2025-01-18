@@ -29,26 +29,6 @@ environment_variables := data.environment_variables
 
 project_config := map_project_config(data.projects_config, svc_principal)
 
-script := `
-local set1 = KEYS[1]
-local start = KEYS[2]
-local set1_cost = tonumber(KEYS[3])
-local current = KEYS[4]
-
-redis.call("ZREMRANGEBYLEX", set1, "[0", "(" .. start)
-
-local set1_members = redis.call("ZRANGE", set1, 0, -1, "WITHSCORES")
-
-local set1_sum = 0
-for i = 2, #set1_members, 2 do
-    set1_sum = set1_sum + tonumber(set1_members[i])
-end
-
-redis.call("ZINCRBY", set1, set1_cost, current)
-
-return set1_sum
-`
-
 map_project_config(configs, project) := config if {
 	config := configs[project]
 } else := config if {
@@ -166,14 +146,14 @@ request_logs_cost(id, quotas, window_start, endpoint) := total_cost if {
 	encoded_id := urlquery.encode(id)
 	encoded_script := urlquery.encode(script)
 	cost_request := data.cost_endpoints[endpoint]
-	redisl := http.send({
+	storage := http.send({
 		"method": "GET",
-		"url": sprintf("https://state-storage.zt.local:7379/EVAL/%s/2/%s/%.5f/%v/%.5f", [encoded_script, encoded_id, window_start, cost_request, now]),
+		"url": sprintf("https://state-storage.zt.local:7379/%s/%.5f/%v/%.5f", [encoded_id, window_start, cost_request, now]),
 		"tls_ca_cert_file": ca_cert,
 		"tls_client_cert_file": client_cert,
 		"tls_client_key_file": client_key,
 	})
-	total_cost := to_number(redisl.body.EVAL)
+	total_cost := to_number(storage.body)
 }
 
 
