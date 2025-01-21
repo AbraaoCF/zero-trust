@@ -1,14 +1,14 @@
-#	 		OPA Policy with Zero Trust Approach 		  
-# 			 	Fine Grained Access Control				  
-# 			Author: Abraão Caiana de Freitas   		 	  
-#				(github.com/AbraaoCF) 				  	  
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #	# 
-# This policy is responsible for the fine-grained access  
-# control of the API Gateway. It is responsible for       
-# authorizing the requests based on the path and the      
-# client's Principal ID.									  
-#														  
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #	# 
+#	 		OPA Policy with Zero Trust Approach
+# 			 	Fine Grained Access Control
+# 			Author: Abraão Caiana de Freitas
+#				(github.com/AbraaoCF)
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #	#
+# This policy is responsible for the fine-grained access
+# control of the API Gateway. It is responsible for
+# authorizing the requests based on the path and the
+# client's Principal ID.
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #	#
 
 package authz
 
@@ -28,7 +28,6 @@ allow_path := endpoint if {
 	glob.match(`/service/rest/auth`, ["/"], route)
 	endpoint := `/service/rest/auth`
 }
-
 
 # Consumption
 allow_path := endpoint if {
@@ -74,14 +73,13 @@ svc_principal := client_id if {
 }
 
 svc_principal := client_id if {
-	not	input.attributes.source.principal
+	not input.attributes.source.principal
 	client_id := "unauthenticated"
 }
 
 check_id_load_test if {
 	svc_principal in data.load_test_svc
 }
-
 
 check_id_unsupported if {
 	svc_principal in data.unsupported_svc

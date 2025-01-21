@@ -7,7 +7,8 @@
   },
   "environment_variables":{
     "starting_working_hours": 9,
-    "ending_working_hours": 21
+    "ending_working_hours": 21,
+    "weekend_days": [6, 7]
   },
   "cost_endpoints":{
       "/service/rest/auth": 2,
