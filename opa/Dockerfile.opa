@@ -1,4 +1,4 @@
-FROM openpolicyagent/opa:1.0.0-envoy-3
+FROM openpolicyagent/opa:1.0.1-envoy-1
 
 WORKDIR /app
 

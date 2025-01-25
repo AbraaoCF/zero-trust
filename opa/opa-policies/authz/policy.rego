@@ -112,7 +112,6 @@ choose_response(request_info, user) := response if {
 		"headers": {"x-ext-authz-check": "allowed"},
 		"id": user,
 	}
-	# log_request_quotas(request_info.user_id_quotas, now, request_info.cost_request)
 }
 
 choose_response(request_info, user) := response if {
@@ -146,28 +145,13 @@ request_logs_cost(id, quotas, window_start, endpoint) := total_cost if {
 	encoded_id := urlquery.encode(id)
 	cost_request := data.cost_endpoints[endpoint]
 	encoded_script := urlquery.encode(script)
-	url := sprintf("https://state-storage.zt.local:7379/EVAL/%s/2/%s/%.5f/%v/%.5f", [encoded_script, encoded_id, window_start, cost_request, now])
+	url := sprintf("https://state-storage.zt.local:7379/EVAL/%s/4/%s/%.5f/%v/%.5f", [encoded_script, encoded_id, window_start, cost_request, now])
 	storage := http.send({
 		"method": "GET",
 		"url": url,
-		"headers": {
-			"Content-Type": "application/json",
-			"x-timestamp": sprintf("%f", [window_start]),
-		},
 		"tls_ca_cert_file": ca_cert,
 		"tls_client_cert_file": client_cert,
 		"tls_client_key_file": client_key,
 	})
 	total_cost := to_number(storage.body.EVAL)
 }
-
-# log_request_quotas(id, timestamp, value) if {
-#       http.send({
-#               "method": "GET",
-#               "url": sprintf("https://state-storage.zt.local:7379/ZINCRBY/%s/%v/%.5f", [urlquery.encode(id), value, timestamp]),
-#               "headers": {"Content-Type": "application/json"},
-#               "tls_ca_cert_file": ca_cert,
-#               "tls_client_cert_file": client_cert,
-#               "tls_client_key_file": client_key,
-#       })
-# }

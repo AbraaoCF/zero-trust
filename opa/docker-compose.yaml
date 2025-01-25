@@ -1,5 +1,6 @@
 services:
   ext_authz-opa-service:
+    container_name: opa-service
     build:
       context: .
       dockerfile: Dockerfile.opa
