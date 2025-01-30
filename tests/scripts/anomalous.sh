@@ -1,17 +1,17 @@
 #!/bin/bash
 
-HOST="https://localhost:10000"
+HOST="https://envoy.zt.local:8000"
 URI="/items"
-CERTS_FOLDERS="$HOME/programacao/tcc/tcc/certs"
+CERTS_FOLDERS="$HOME/zero-trust/commons/certs"
 CACERT="$CERTS_FOLDERS/ca.crt"
 CERT="$CERTS_FOLDERS/anomalous.crt"
 KEY="$CERTS_FOLDERS/anomalous.key"
 TARGETS_FILE="anomalous_targets.txt"
 REPORTS_FILE="anomalous.bin"
 INTERVAL=1
-RATE=300
-WORKERS=10
-DURATION="9m"
+RATE=15
+WORKERS=1
+DURATION="6m"
 
 attack() {
   vegeta attack \

@@ -5,7 +5,7 @@ In the following topics we will discuss the rationale behind the decisions.
 
 ## Allow Id to Access Path
 
-The [policy_routes.rego](../policies/policy_routes.rego) file is designed to validate request paths and ensure that only registered **principals** can access specific group routes. The routes are divided into the following groups: `building_svc`, `consumption_svc`, `unsupported_svc`, `sensor_svc`, `statistics_svc`, and `user_svc`.
+The [policy_routes.rego](../policies/policy_routes.rego) file is designed to validate request paths and ensure that only registered **principals** can access specific group routes. The routes are divided into the following groups: `building_svc`, `consumption_svc`, `load_test_svc`, and `user_svc`.
 
 To enhance security, we can add a more specific check for individual endpoints. This involves registering IDs for the endpoints in the [`data.json`](../opa-policies/data.json) file and incorporating an additional check within the respective function. This approach increases the granularity of the policy, ensuring more precise access control.
 

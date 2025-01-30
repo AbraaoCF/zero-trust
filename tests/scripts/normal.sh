@@ -1,19 +1,17 @@
 #!/bin/bash
 
-HOST="https://localhost:10000"
+HOST="https://envoy.zt.local:8000"
 URI="/items"
-INTERVAL=20 
-USER="1"
-CERTS_FOLDERS="$HOME/programacao/tcc/tcc/certs"
+CERTS_FOLDERS="$HOME/zero-trust/commons/certs"
 CACERT="$CERTS_FOLDERS/ca.crt"
 CERT="$CERTS_FOLDERS/normal.crt"
 KEY="$CERTS_FOLDERS/normal.key"
 TARGETS_FILE="normal_targets.txt"
 REPORTS_FILE="normal.bin"
 INTERVAL=1
-RATE="15/1m"
+RATE="1"
 WORKERS=1
-DURATION="13m"
+DURATION="2m"
 
 function start {
   vegeta attack \

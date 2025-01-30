@@ -132,6 +132,7 @@ process_request_quotas(user, endpoint) := response if {
 		"user_id_quotas": user_id_quotas,
 		"cost_logs": cost_logs,
 		"cost_request": cost_request,
+		"exceed_quotas": cost_logs + cost_request > user_quotas
 	}
 }
 

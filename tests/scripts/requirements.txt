@@ -1,3 +1,4 @@
 opensearch-py
 pandas
 matplotlib
+seaborn
