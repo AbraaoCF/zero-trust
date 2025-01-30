@@ -1,0 +1,148 @@
+{
+  "name": "envoy-too-many-429-requests",
+  "type": "monitor",
+  "monitor_type": "bucket_level_monitor",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "unit": "MINUTES",
+      "interval": 1
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "envoy"
+        ],
+        "query": {
+          "size": 0,
+          "query": {
+            "bool": {
+              "filter": [
+                {
+                  "range": {
+                    "start_time": {
+                      "from": "{{period_end}}||-60m",
+                      "to": "{{period_end}}",
+                      "include_lower": true,
+                      "include_upper": true,
+                      "format": "epoch_millis",
+                      "boost": 1
+                    }
+                  }
+                },
+                {
+                  "exists": {
+                    "field": "uri",
+                    "boost": 1
+                  }
+                },
+                {
+                  "term": {
+                    "response_code": {
+                      "value": 429,
+                      "boost": 1
+                    }
+                  }
+                }
+              ],
+              "adjust_pure_negative": true,
+              "boost": 1
+            }
+          },
+          "aggregations": {
+            "terms_agg": {
+              "terms": {
+                "field": "uri.keyword",
+                "size": 10,
+                "min_doc_count": 1,
+                "shard_min_doc_count": 0,
+                "show_term_doc_count_error": false,
+                "order": {
+                  "_key": "asc"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "bucket_level_trigger": {
+        "id": "nq_8eZEBl4KNMQxhyhNF",
+        "name": "too-many-429-requests",
+        "severity": "2",
+        "condition": {
+          "buckets_path": {
+            "_count": "_count"
+          },
+          "parent_bucket_path": "terms_agg",
+          "script": {
+            "source": "params._count > 40",
+            "lang": "painless"
+          },
+          "gap_policy": "skip"
+        },
+        "actions": [
+          {
+            "id": "notification027581",
+            "name": "alerting-api",
+            "destination_id": "OqskdpEBl4KNMQxhQMg1",
+            "message_template": {
+              "source": "{\n  \"alerts\": [\n    {{#ctx.newAlerts}}\n    {\n      \"type\" : \"bucket\",\n      \"key\": \"{{bucket_keys}}\",\n      \"monitor_name\": \"{{ctx.monitor.name}}\",\n      \"trigger_name\": \"{{ctx.trigger.name}}\",\n      \"trigger_severity\": {{ctx.trigger.severity}},\n      \"period_start\": \"{{ctx.periodStart}}\",\n      \"period_end\": \"{{ctx.periodEnd}}\",\n      \"global_scope\": false\n    },\n    {{/ctx.newAlerts}}\n    {{#ctx.dedupedAlerts}}\n    {\n      \"type\" : \"bucket\",\n      \"key\": \"{{bucket_keys}}\",\n      \"monitor_name\": \"{{ctx.monitor.name}}\",\n      \"trigger_name\": \"{{ctx.trigger.name}}\",\n      \"trigger_severity\": {{ctx.trigger.severity}},\n      \"period_start\": \"{{ctx.periodStart}}\",\n      \"period_end\": \"{{ctx.periodEnd}}\",\n      \"global_scope\": false\n    },\n    {{/ctx.dedupedAlerts}}\n    null\n  ]\n}",
+              "lang": "mustache"
+            },
+            "throttle_enabled": false,
+            "subject_template": {
+              "source": "Alerting Notification action",
+              "lang": "mustache"
+            },
+            "action_execution_policy": {
+              "action_execution_scope": {
+                "per_execution": {}
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "ui_metadata": {
+    "schedule": {
+      "timezone": null,
+      "frequency": "interval",
+      "period": {
+        "unit": "MINUTES",
+        "interval": 1
+      },
+      "daily": 0,
+      "weekly": {
+        "tue": false,
+        "wed": false,
+        "thur": false,
+        "sat": false,
+        "fri": false,
+        "mon": false,
+        "sun": false
+      },
+      "monthly": {
+        "type": "day",
+        "day": 1
+      },
+      "cronExpression": "0 */1 * * *"
+    },
+    "monitor_type": "bucket_level_monitor",
+    "search": {
+      "searchType": "query",
+      "timeField": "",
+      "aggregations": [],
+      "groupBy": [],
+      "bucketValue": 1,
+      "bucketUnitOfTime": "h",
+      "filters": []
+    }
+  }
+}

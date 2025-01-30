@@ -1,5 +1,5 @@
 {
-  "name": "request-limit-monitor",
+  "name": "envoy-alerts",
   "type": "monitor",
   "monitor_type": "bucket_level_monitor",
   "enabled": true,
@@ -13,7 +13,7 @@
     {
       "search": {
         "indices": [
-          "envoy"
+          "envoy_alerts"
         ],
         "query": {
           "size": 0,
@@ -22,8 +22,8 @@
               "filter": [
                 {
                   "range": {
-                    "start_time": {
-                      "from": "{{period_end}}||-10m",
+                    "period_start": {
+                      "from": "{{period_end}}||-240m",
                       "to": "{{period_end}}",
                       "include_lower": true,
                       "include_upper": true,
@@ -34,7 +34,7 @@
                 },
                 {
                   "exists": {
-                    "field": "spiffe_id",
+                    "field": "key",
                     "boost": 1
                   }
                 }
@@ -46,19 +46,14 @@
           "aggregations": {
             "terms_agg": {
               "terms": {
-                "field": "spiffe_id.keyword",
+                "field": "key.keyword",
                 "size": 10,
                 "min_doc_count": 1,
                 "shard_min_doc_count": 0,
                 "show_term_doc_count_error": false,
-                "order": [
-                  {
-                    "_count": "desc"
-                  },
-                  {
-                    "_key": "asc"
-                  }
-                ]
+                "order": {
+                  "_key": "asc"
+                }
               }
             }
           }
@@ -69,8 +64,8 @@
   "triggers": [
     {
       "bucket_level_trigger": {
-        "id": "IiXAL5EBp1H7vfUaAi_-",
-        "name": "high_request_count_trigger",
+        "id": "DK8GepEBl4KNMQxhNB1U",
+        "name": "high-alerts",
         "severity": "1",
         "condition": {
           "buckets_path": {
@@ -83,7 +78,27 @@
           },
           "gap_policy": "skip"
         },
-        "actions": []
+        "actions": [
+          {
+            "id": "notification106177",
+            "name": "alerting-api",
+            "destination_id": "OqskdpEBl4KNMQxhQMg1",
+            "message_template": {
+              "source": "{\n  \"alerts\": [\n    {{#ctx.newAlerts}}\n    {\n      \"type\" : \"bucket\",\n      \"key\": \"{{bucket_keys}}\",\n      \"monitor_name\": \"{{ctx.monitor.name}}\",\n      \"trigger_name\": \"{{ctx.trigger.name}}\",\n      \"trigger_severity\": {{ctx.trigger.severity}},\n      \"period_start\": \"{{ctx.periodStart}}\",\n      \"period_end\": \"{{ctx.periodEnd}}\",\n      \"global_scope\": false\n    },\n    {{/ctx.newAlerts}}\n    {{#ctx.dedupedAlerts}}\n    {\n      \"type\" : \"bucket\",\n      \"key\": \"{{bucket_keys}}\",\n      \"monitor_name\": \"{{ctx.monitor.name}}\",\n      \"trigger_name\": \"{{ctx.trigger.name}}\",\n      \"trigger_severity\": {{ctx.trigger.severity}},\n      \"period_start\": \"{{ctx.periodStart}}\",\n      \"period_end\": \"{{ctx.periodEnd}}\",\n      \"global_scope\": false\n    },\n    {{/ctx.dedupedAlerts}}\n    null\n  ]\n}",
+              "lang": "mustache"
+            },
+            "throttle_enabled": false,
+            "subject_template": {
+              "source": "Alerting Notification action",
+              "lang": "mustache"
+            },
+            "action_execution_policy": {
+              "action_execution_scope": {
+                "per_execution": {}
+              }
+            }
+          }
+        ]
       }
     }
   ],
@@ -114,25 +129,12 @@
     "monitor_type": "bucket_level_monitor",
     "search": {
       "searchType": "query",
-      "timeField": "start_time",
+      "timeField": "period_start",
       "aggregations": [],
-      "groupBy": [
-        "spiffe_id"
-      ],
+      "groupBy": [],
       "bucketValue": 10,
       "bucketUnitOfTime": "m",
-      "filters": [
-        {
-          "fieldName": [
-            {
-              "label": "spiffe_id",
-              "type": "keyword"
-            }
-          ],
-          "fieldValue": "",
-          "operator": "is_not_null"
-        }
-      ]
+      "filters": []
     }
   }
 }

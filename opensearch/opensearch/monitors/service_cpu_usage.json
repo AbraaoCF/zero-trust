@@ -1,0 +1,143 @@
+{
+  "name": "service_cpu_usage",
+  "type": "monitor",
+  "monitor_type": "query_level_monitor",
+  "enabled": true,
+  "schedule": {
+    "period": {
+      "unit": "MINUTES",
+      "interval": 1
+    }
+  },
+  "inputs": [
+    {
+      "search": {
+        "indices": [
+          "containers"
+        ],
+        "query": {
+          "size": 0,
+          "query": {
+            "bool": {
+              "filter": [
+                {
+                  "range": {
+                    "timestamp": {
+                      "from": "{{period_end}}||-10m",
+                      "to": "{{period_end}}",
+                      "include_lower": true,
+                      "include_upper": true,
+                      "format": "epoch_millis",
+                      "boost": 1
+                    }
+                  }
+                },
+                {
+                  "match_phrase": {
+                    "container_name": {
+                      "query": "service",
+                      "slop": 0,
+                      "zero_terms_query": "NONE",
+                      "boost": 1
+                    }
+                  }
+                }
+              ],
+              "adjust_pure_negative": true,
+              "boost": 1
+            }
+          },
+          "aggregations": {
+            "metric": {
+              "avg": {
+                "field": "cpu_perc"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "query_level_trigger": {
+        "id": "Y9X0uJEBl4KNMQxhsD5s",
+        "name": "high-cpu-usage",
+        "severity": "3",
+        "condition": {
+          "script": {
+            "source": "return ctx.results[0].aggregations.metric.value == null ? false : ctx.results[0].aggregations.metric.value > 80",
+            "lang": "painless"
+          }
+        },
+        "actions": [
+          {
+            "id": "notification250849",
+            "name": "alerting-api",
+            "destination_id": "OqskdpEBl4KNMQxhQMg1",
+            "message_template": {
+              "source": "{\n  \"alerts\": [\n    {\n      \"type\": \"query\",\n      \"monitor_name\": \"{{ctx.monitor.name}}\",\n      \"severity\": {{ctx.trigger.severity}},\n      \"period_start\": \"{{ctx.periodStart}}\",\n      \"period_end\": \"{{ctx.periodEnd}}\",\n      \"trigger_name\": \"{{ctx.trigger.name}}\",\n      \"trigger_severity\": {{ctx.trigger.severity}},\n      \"global_scope\": true\n    }\n  ]\n}",
+              "lang": "mustache"
+            },
+            "throttle_enabled": false,
+            "subject_template": {
+              "source": "Alerting Notification action",
+              "lang": "mustache"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "ui_metadata": {
+    "schedule": {
+      "timezone": null,
+      "frequency": "interval",
+      "period": {
+        "unit": "MINUTES",
+        "interval": 1
+      },
+      "daily": 0,
+      "weekly": {
+        "tue": false,
+        "wed": false,
+        "thur": false,
+        "sat": false,
+        "fri": false,
+        "mon": false,
+        "sun": false
+      },
+      "monthly": {
+        "type": "day",
+        "day": 1
+      },
+      "cronExpression": "0 */1 * * *"
+    },
+    "monitor_type": "query_level_monitor",
+    "search": {
+      "searchType": "query",
+      "timeField": "timestamp",
+      "aggregations": [
+        {
+          "aggregationType": "avg",
+          "fieldName": "cpu_perc"
+        }
+      ],
+      "groupBy": [],
+      "bucketValue": 1,
+      "bucketUnitOfTime": "m",
+      "filters": [
+        {
+          "fieldName": [
+            {
+              "label": "container_name",
+              "type": "text"
+            }
+          ],
+          "fieldValue": "service",
+          "operator": "is"
+        }
+      ]
+    }
+  }
+}
