@@ -16,7 +16,7 @@ This work explores the integration of three open-source tools, Envoy, and OpenSe
 
 ## Architecture Overview
 
-![architecture-overview](https://github.com/davihsg/tcc/raw/main/assets/architecture-overview.png)
+![architecture-overview](https://github.com/AbraaoCF/zero-trust/raw/main/opensearch/assets/diagrama_seq_opensearch.png)
 
 Here's a brief explanation of each step in the flow:
 
@@ -42,51 +42,56 @@ Ensure you have Docker and Docker Compose installed on your system. If not, you 
 
 ### 1. Certificates
 
-For a detailed guide on how to create all certificates, please refer to the link [**Create CA certificates**](certs/README.md). This is required for enforsing TLS termination between peers.
+For a detailed guide on how to create all certificates, please refer to the link [**Create CA certificates**](../commons/certs/README.md). This is required for enforsing TLS termination between peers.
 
 ### 2. Starting the services
 
 Every component of the system is running on a docker container. Docker Compose is ideal for this setup because of its built-in DNS, which simplifies communication between services.
 
-1. **Networks**
+The system has five main components:
 
-   The system is organized into two networks:
+- **opensearch** on single-node mode with dashboard extension;
+- **service** to simulate a real upstream service;
+- **envoy-service** to handle communication between components;
+- **state storage (webdis + redis)** for storing data and fetching Redis via HTTP;
 
-   - **webdis** (includes Envoy and Webdis containers)
-   - **world** (includes OpenSearch, Envoy, API, and Fluent Bit)
+#### OpenSearch
 
-2. **Containers**
+```
+cd opensearch
+docker compose up -d
+```
 
-   The system has six containers:
+#### Service
 
-   - **opensearch** on single-node mode;
-   - **opensearch dashboards** to set up alerts;
-   - **fluent bit** to ingest logs from envoy into opensearch;
-   - **dummy api** to simulate a real upstream service;
-   - **envoy** to handle communication between components;
-   - **webdis (+ redis)** for storing data and fetching Redis via HTTP;
+```
+cd ../commons/service 
+docker compose up -d
+```
 
-3. **Volumes**
+#### Envoy Service
 
-   There is only one volume:
+```
+cd envoy-service
+docker compose up -d
+```
 
-   - **opensearch-data** for storing opensearch in disk (and not lose everything - yes, this happened)
+#### State Storage
 
-To start all containers, simple run:
-
-```bash
+```
+cd ../commons/state-storage
 docker compose up -d
 ```
 
 ### 3. Ingest Envoy Access Log into Opensearch
 
-By running `docker compose up -d`, this step is already configured, but read it to understand and to change where is needed.
+This step is already configured, but read it to understand and to change where is needed.
 
 #### 3.1. Configure Listener for Access Logs
 
 Modify Envoy’s configuration to include a listener filter that outputs logs in JSON format. This ensures that Fluent Bit can easily parse and forward these logs to OpenSearch.
 
-The log must contain a `uri` field. See this [example](https://github.com/davihsg/tcc/blob/main/envoy/envoy.yaml#L122). Adding useful information such as listener and duration is really useful since you can create different monitors with them. Check the example for more information.
+The log must contain a `uri` field. See this [example](envoy-service/envoy/envoy.yaml). Adding useful information such as listener and duration is really useful since you can create different monitors with them. Check the example for more information.
 
 Example:
 
@@ -116,7 +121,7 @@ Example:
      filename: /etc/lua/ratelimit.lua
 ```
 
-The [lua script](https://github.com/davihsg/tcc/blob/main/envoy/lua/ratelimit.lua) just gets the value from two keys: the uri, and a global key. If either one of them is greater than `PENALTY_LIMIT`, meaning that there are an ongoing alerts, Envoy returns `429 - Too Many Requests` - immediatly. Otherwise, the request is processed normally. You can set the `PENALTY_LIMIT` on the script, the default is 0.
+The [lua script](envoy-service/envoy/lua/access_control.lua) just gets the value from two keys: the uri, and a global key. If either one of them is greater than `PENALTY_LIMIT`, meaning that there are an ongoing alerts, Envoy returns `429 - Too Many Requests` - immediatly. Otherwise, the request is processed normally. You can set the `PENALTY_LIMIT` on the script, the default is 0.
 
 The script works as a time window accumulator that checks the sum of penalty for an URI, and also ongoing problems for the system. First, it removes entries less than `current_time - WINDOW_SIZE`, then returns the sum of the remaining values. This not only cleans the entries on Redis, but also protects a user from running into a deadlock. Define the `WINDOW_SIZE` variable with the time you want.
 
@@ -139,7 +144,7 @@ listener:
   address:
     socket_address:
       address: 0.0.0.0
-      port_value: 31415
+      port_value: 9000
   filter_chains:
     - filters:
         - name: envoy.filters.network.http_connection_manager
@@ -222,7 +227,7 @@ You can create the index and its mapping using a `curl` command, or by refreshin
 Example `curl` command for creating an index:
 
 ```bash
-curl --cacert certs/ca.crt -X PUT "http://opensearch:9200/envoy" -H 'Content-Type: application/json' -d'
+curl --cacert ../commons/certs/ca.crt -X PUT "http://opensearch:9200/envoy" -H 'Content-Type: application/json' -d'
 {
  "mappings": {
    "properties": {
@@ -238,12 +243,12 @@ curl --cacert certs/ca.crt -X PUT "http://opensearch:9200/envoy" -H 'Content-Typ
 
 This index will store alert documents sent by the Envoy for further analysis.
 
-You can create the index and its mapping using a `curl` command, or by refreshing the current index. Check [envoy-alerts_mapping.json](https://github.com/davihsg/tcc/tree/main/opensearch/envoy-alerts_mapping.json).
+You can create the index and its mapping using a `curl` command, or by refreshing the current index. Check [indexes](opensearch/indexes/).
 
 Example `curl` command:
 
 ```bash
-curl --cacert certs/ca.crt -X PUT "http://opensearch:9200/envoy_alerts" -H 'Content-Type: application/json' -d'
+curl --cacert ../commons/certs/ca.crt -X PUT "http://opensearch:9200/envoy_alerts" -H 'Content-Type: application/json' -d'
 {
  "mappings": {
    "properties": {
@@ -272,7 +277,7 @@ The webhook should be configured with the Envoy Alert Handler URL. It should lik
     "config_type": "webhook",
     "is_enabled": true,
     "webhook": {
-      "url": "http://envoy:31415/alert",
+      "url": "http://envoy:9000/alert",
       "header_params": {
         "Content-Type": "application/json"
       },
@@ -355,9 +360,5 @@ The rate limiting is now set up. Users can access the API through Envoy by passi
 Example request:
 
 ```bash
-curl --cacert ca.crt --cert normal.crt --key normal.key "https://localhost:10002/items"
+curl --cacert ca.crt --cert normal.crt --key normal.key "https://localhost:8000/items"
 ```
-
-## Authors
-
-- [davihsg](https://github.com/davihsg)
