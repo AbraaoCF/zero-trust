@@ -1,13 +1,186 @@
 services:
-  ext_authz-opa-service:
-    container_name: opa-service
+  ext_authz-opa-service-1:
+    container_name: opa-service-1
     build:
       context: .
       dockerfile: Dockerfile.opa
     ports:
-    - "9002:9002"
+      - "9002:9002"
+      - "8181:8181"  # Expose API port for monitoring and debugging
     volumes:
-      - ./opa-policies:/app/policies
-      - ../commons/certs:/app/tls
+      - ../commons/certs:/app/tls:ro  # Mount as read-only
+      - ./opa-policies:/app/policies:ro
+    depends_on:
+      - opal-client-1
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    environment:
+      - OPA_ADDR=0.0.0.0:8181
+    networks:
+      - opa-network
+    hostname: opa-service-1
+
+  ext_authz-opa-service-2:
+    container_name: opa-service-2
+    build:
+      context: .
+      dockerfile: Dockerfile.opa
+    ports:
+      - "9003:9002"  # Diferentes portas para o segundo serviço
+      - "8182:8181"
+    volumes:
+      - ../commons/certs:/app/tls:ro
+      - ./opa-policies:/app/policies:ro
+    depends_on:
+      - opal-client-2
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    environment:
+      - OPA_ADDR=0.0.0.0:8181
+    networks:
+      - opa-network
+    hostname: opa-service-2
+
+  redis:
+    image: redis:6-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - opa-network
+    hostname: redis
+
+  opal-server:
+    image: permitio/opal-server:latest
+    container_name: opal-server
+    ports:
+      - "7002:7002"
+    environment:
+      - OPAL_POLICY_REPO_URL=file:///app/policy_repo
+      - OPAL_POLICY_REPO_MAIN_BRANCH=main
+      - OPAL_POLICY_REPO_POLLING_INTERVAL=30
+      - OPAL_DATA_CONFIG_UPDATER_ENABLED=true
+      - OPAL_AUTH_MASTER_TOKEN=ZeroTrustDemo2023
+      - PORT=7002
+      - UVICORN_NUM_WORKERS=2
+      - LOG_LEVEL=info
+      - OPAL_BROADCAST_URI=redis://redis:6379
+    volumes:
+      - ./opa-policies:/app/policy_repo:ro
+    networks:
+      - opa-network
+    depends_on:
+      - redis
+    hostname: opal-server
+
+  opal-client-1:
+    image: permitio/opal-client:latest
+    container_name: opal-client-1
+    depends_on:
+      - opal-server
+    environment:
+      - OPAL_SERVER_URL=http://opal-server:7002
+      - OPAL_CLIENT_TOKEN=ZeroTrustDemo2023
+      - OPAL_POLICY_PATH=/app/policies/
+      - OPAL_DATA_CONFIG_SOURCES={"entries":[{"source_type":"server","topics":["policy_data"]}]}
+      - OPAL_OPA_HOST=ext_authz-opa-service-1
+      - OPAL_OPA_PORT=8181
+      - OPAL_INLINE_POLICY_ENABLED=true
+      - OPAL_REQUEST_TIMEOUT=15
+      - OPAL_CACHE_ENABLED=true
+      - OPAL_CACHE_TTL=300
+      - LOG_LEVEL=info
+    volumes:
+      - ./opa-policies:/app/policies:ro
+    networks:
+      - opa-network
+    hostname: opal-client-1
+
+  opal-client-2:
+    image: permitio/opal-client:latest
+    container_name: opal-client-2
+    depends_on:
+      - opal-server
+    environment:
+      - OPAL_SERVER_URL=http://opal-server:7002
+      - OPAL_CLIENT_TOKEN=ZeroTrustDemo2023
+      - OPAL_POLICY_PATH=/app/policies/
+      - OPAL_DATA_CONFIG_SOURCES={"entries":[{"source_type":"server","topics":["policy_data"]}]}
+      - OPAL_OPA_HOST=ext_authz-opa-service-2
+      - OPAL_OPA_PORT=8181
+      - OPAL_INLINE_POLICY_ENABLED=true
+      - OPAL_REQUEST_TIMEOUT=15
+      - OPAL_CACHE_ENABLED=true
+      - OPAL_CACHE_TTL=300
+      - LOG_LEVEL=info
+    volumes:
+      - ./opa-policies:/app/policies:ro
+    networks:
+      - opa-network
+    hostname: opal-client-2
+
+  usage-tracker:
+    container_name: usage-tracker
+    build:
+      context: .
+      dockerfile: Dockerfile.usage-tracker
+    depends_on:
+      - opal-server
+      - ext_authz-opa-service-1
+      - ext_authz-opa-service-2
+    environment:
+      - OPAL_SERVER_URL=http://opal-server:7002
+      - OPAL_AUTH_TOKEN=ZeroTrustDemo2023
+      - OPA_DECISION_LOGS=http://ext_authz-opa-service-1:8181/v1/decision_logs,http://ext_authz-opa-service-2:8181/v1/decision_logs
+      - UPDATE_INTERVAL=5
+      - TIME_WINDOW=60
+      - LOG_LEVEL=info
+    networks:
+      - opa-network
+    restart: unless-stopped
+    hostname: usage-tracker
+    
+  # Serviço Envoy
+  envoy:
+    image: envoyproxy/envoy:v1.22.0
+    container_name: envoy
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./envoy:/etc/envoy
+      - ../commons/certs:/etc/envoy/certs:ro
+    networks:
+      - opa-network
+    depends_on:
+      - ext_authz-opa-service-1
+      - ext_authz-opa-service-2
+    hostname: envoy
+    extra_hosts:
+      - "opa-service-1:172.20.0.6"
+      - "opa-service-2:172.20.0.7"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/ready"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+
+networks:
+  opa-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
 
 

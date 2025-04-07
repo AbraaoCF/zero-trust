@@ -16,21 +16,34 @@ import rego.v1
 
 route := http_request.path
 
-# Load Test
+# Pre-compile patterns for more efficient matching
+# Maps exact patterns to endpoints for quick exact matches
+exact_path_map := {
+	"/service/rest/auth": "/service/rest/auth",
+	"/items": "/items"
+}
+
+# Function to check if a path exists in the exact match map
+is_exact_match(path) := endpoint if {
+	endpoint := exact_path_map[path]
+}
+
+# Load Test - check exact match first
 allow_path := endpoint if {
-	glob.match(`/items`, ["/"], route)
+	endpoint := is_exact_match(route)
+	endpoint == "/items"
 	check_id_load_test
-	endpoint := `/items`
 }
 
-# Auth
+# Auth - check exact match first
 allow_path := endpoint if {
-	glob.match(`/service/rest/auth`, ["/"], route)
-	endpoint := `/service/rest/auth`
+	endpoint := is_exact_match(route)
+	endpoint == "/service/rest/auth"
 }
 
-# Consumption
+# Only use glob matching for paths that really need wildcards
 allow_path := endpoint if {
+	not is_exact_match(route)
 	glob.match(`/service/rest/building/*/demand/last`, ["/"], route)
 	check_id_consumption
 	endpoint := `/service/rest/building/*/demand/last`

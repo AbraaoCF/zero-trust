@@ -61,5 +61,8 @@
   ],
   "anomalies":{
     "users": []
+  },
+  "usage_tracker": {
+    "initialized": true
   }
 }

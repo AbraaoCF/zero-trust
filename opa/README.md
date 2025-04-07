@@ -1,13 +1,14 @@
 # Zero Trust Architecture with OPA Engine approach 
 
 This repository proposes a solution using the Open Policy Agent (OPA) as a tool to meet Zero Trust standards. 
-## Sumary
+## Summary
 
 - [Zero Trust Architecture with OPA Engine approach](#zero-trust-architecture-with-opa-engine-approach)
-  - [Sumary](#sumary)
+  - [Summary](#summary)
   - [Motivation](#motivation)
   - [What was achieved](#what-was-achieved)
   - [Architecture](#architecture)
+  - [Performance Optimizations](#performance-optimizations)
   - [Understanding the policy](#understanding-the-policy)
   - [Usage](#usage)
     - [Prerequisites](#prerequisites)
@@ -45,6 +46,31 @@ This is the propposed architecture:
 
 ![architecture](./assets/architecture.png)
 
+## Performance Optimizations
+
+The system has been optimized for high performance using the following approaches:
+
+- **OPAL Integration**: The Open Policy Administration Layer (OPAL) has been integrated to provide:
+  - Real-time policy and data updates without service interruption
+  - Efficient caching mechanisms for policy data
+  - Centralized policy management across multiple OPA instances
+  
+- **Rate Limiting Optimization**: 
+  - Implemented a specialized usage tracking service that processes OPA decision logs
+  - Eliminated direct Redis calls from OPA policies for better performance
+  - Added in-memory caching with TTL-based expiration for rate limit data
+
+- **Policy Evaluation Optimization**:
+  - Added short-circuit conditions for common authorization patterns
+  - Implemented more efficient path matching with pre-compiled path maps
+  - Reduced unnecessary policy evaluation steps for known conditions
+
+These optimizations result in:
+1. Lower latency for policy decisions
+2. Better scalability under high load
+3. Reduced load on external systems
+4. More efficient resource utilization
+
 ## Understanding the policy
 
 To understand the rationale behind the policy decisions and what do they cover go to [policy-decisions.md](./docs/policy-decisions.md).
@@ -64,11 +90,12 @@ docker-compose up --build -d
 ```
 
 This should run the following containers and its respective ports:
- - ext_authz-opa-service: `8181:8181` used to inject data and `9002:9002` used for gRPC communication
+ - ext_authz-opa-service: `8181:8181` used for API and `9002:9002` used for gRPC communication
+ - opal-server: `7002:7002` used for policy management
+ - opal-client: Connects to OPA for policy updates
+ - usage-tracker: Tracks rate limiting usage
  - envoy: `10000:10000`
  - hello-word service: `5678:5678`
- - webdis: `7379:7379`
-
 
 ## Contributing
 
