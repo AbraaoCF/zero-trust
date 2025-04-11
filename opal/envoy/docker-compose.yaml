@@ -1,0 +1,9 @@
+services:
+  envoy-service:
+    container_name: envoy-service  
+    image: envoyproxy/envoy:distroless-v1.32.3
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+      - ../../commons/certs:/etc/envoy/certs
+    ports:
+      - "8001:8001"

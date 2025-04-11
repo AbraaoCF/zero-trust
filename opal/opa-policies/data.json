@@ -1,0 +1,68 @@
+{
+  "rate_limits_config": {
+    "time_window_seconds": 60 
+  },
+  "environment_variables":{
+    "starting_working_hours": 9,
+    "ending_working_hours": 21,
+    "weekend_days": [6, 7]
+  },
+  "cost_endpoints":{
+      "/service/rest/auth": 2,
+      "/service/rest/building/*": 2,
+      "/service/rest/building/*/demands": 2,
+      "/service/rest/building/*/demand/last": 2,
+      "/service/rest/building/*/demand/last_n_minutes": 2,
+      "/service/rest/building/*/consumption": 2,
+      "/service/rest/building/*/demandReport": 2,
+      "/service/rest/building/*/consumption/disaggregated": 1,
+      "/service/rest/consumptionHistory": 2,
+      "/service/rest/user/*/sensors": 2,
+
+      "/items": 1
+  },
+  "whitelisted_endpoints": [
+    "/service/rest/auth"
+  ],
+  "projects_config": {
+    "default": {
+      "quotas": 200,
+      "afterHoursQuotas": 0
+    },
+    "spiffe://zt.local/normal": { 
+      "quotas": 10, 
+      "afterHoursQuotas": 10
+    },
+    "spiffe://acme.com/admin": {
+      "quotas": 200,
+      "afterHoursQuotas": 300
+    },
+    "spiffe://acme.com/projeto1": {
+      "quotas": 200,
+      "afterHoursQuotas": 0
+    },
+    "unauthenticated": {
+      "quotas": 200,
+      "afterHoursQuotas": 0
+    }
+  },
+  "load_test_svc": [
+    "spiffe://zt.local/normal"
+  ],
+  "consumption_svc": [
+    "spiffe://acme.com/projeto1"
+  ],
+  "unsupported_svc": [
+    "spiffe://acme.com/projeto1"
+  ],
+  "user_svc": [
+    "spiffe://acme.com/projeto1",
+    "spiffe://acme.com/normal"
+  ],
+  "anomalies":{
+    "users": []
+  },
+  "usage_tracker": {
+    "initialized": true
+  }
+}

@@ -36,3 +36,15 @@ openssl x509 -req -in anomalous.csr -CA ca.crt -CAkey ca.key -CAcreateserial -ou
 openssl genrsa -out service.key 4096
 openssl req -new -key service.key -out service.csr -config service.cnf
 openssl x509 -req -in service.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out service.crt -days 365 -sha256 -extensions v3_req -extfile service.cnf
+
+# OPAL server keys for authentication
+echo "Generating OPAL server RSA keys for authentication..."
+ssh-keygen -t rsa -b 4096 -m pem -f opal_auth -N "" << EOF
+
+EOF
+
+# Convert the OPAL private key format for docker-compose (replace newlines with underscores)
+echo "OPAL_AUTH_PRIVATE_KEY=$(cat opal_auth | tr '\n' '_')" > opal_keys.env
+echo "OPAL_AUTH_PUBLIC_KEY=$(cat opal_auth.pub)" >> opal_keys.env
+echo "OPAL keys generated and saved to opal_keys.env"
+
