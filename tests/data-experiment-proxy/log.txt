@@ -1,0 +1,19 @@
+[experiment] starting at Sat Apr 26 04:48:15 UTC 2025
+[experiment] starting normal bot...
+[experiment] starting anomalous with normal behavior bot...
+[experiment] Normal behaviors on requesting for 120 seconds
+[normal] creating targets file
+[normal] targets created with default route
+[normal] starting...
+[anomalous] creating targets file
+[anomalous] targets created with default route
+[anomalous] starting 'anomalous' with regular behavior for 2m at Sat Apr 26 04:48:15 UTC 2025
+[experiment] starting anomalous on attack behavior bot...
+[experiment] Anomalous behavior for 360 seconds
+[anomalous] creating targets file
+[anomalous] targets already exists, skipping...
+[anomalous] starting DDoS attack for 6m at Sat Apr 26 04:50:15 UTC 2025
+[anomalous] 'anomalous' regular behavior finished (for now)
+[experiment] done at Sat Apr 26 04:56:15 UTC 2025
+[anomalous] DDoS attack finished (for now)
+[normal] stopping...

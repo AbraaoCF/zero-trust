@@ -28,7 +28,7 @@ logger = logging.getLogger('opal-usage-tracker')
 OPAL_SERVER_URL = os.environ.get('OPAL_SERVER_URL', 'http://opal-server:7002')
 OPAL_AUTH_TOKEN = os.environ.get('OPAL_AUTH_TOKEN', 'ZeroTrustDemo2025')
 
-# Webhook server configuration 
+# Webhook server configuration
 WEBHOOK_PORT = int(os.environ.get('WEBHOOK_PORT', '8080'))
 logger.info(f"Using webhook server on port {WEBHOOK_PORT}")
 
@@ -57,7 +57,7 @@ def receive_decision():
     try:
         # Check Content-Encoding header for gzip
         content_encoding = request.headers.get('Content-Encoding', '')
-        
+
         if 'gzip' in content_encoding.lower():
             # Decompress the gzipped data
             try:
@@ -72,15 +72,15 @@ def receive_decision():
         else:
             # Regular JSON data
             content = request.json
-        
+
         # Debug log the content (only in development)
         debug_level = os.environ.get('LOG_LEVEL', 'info').lower()
         if debug_level == 'debug':
             logger.debug(f"Received content: {json.dumps(content, indent=2)}")
-        
+
         if not content:
             return jsonify({"status": "error", "message": "No data received"}), 400
-        
+
         # Add to queue for processing
         with queue_lock:
             if isinstance(content, list):
@@ -92,7 +92,7 @@ def receive_decision():
                 # Single decision
                 decision_queue.append(content)
                 logger.info("Received a single decision log from OPA")
-        
+
         return jsonify({"status": "success"}), 200
     except Exception as e:
         logger.error(f"Error receiving decision log: {str(e)}")
@@ -107,10 +107,10 @@ def obtain_token():
     """Obtain a data source token from OPAL server."""
     url = f"{OPAL_SERVER_URL}/token"
     headers = {"Authorization": f"Bearer {OPAL_AUTH_TOKEN}"}
-    
+
     try:
         response = requests.post(
-            url, 
+            url,
             headers=headers,
             json={"type": "datasource"}
         )
@@ -124,20 +124,20 @@ def clean_expired_entries():
     """Remove expired entries from the usage cache."""
     current_time = time.time()
     expired_time = current_time - TIME_WINDOW
-    
+
     keys_to_remove = []
     for user_id, usage_data in usage_cache.items():
         # Filter out old timestamps
-        new_entries = [(timestamp, cost) for timestamp, cost in usage_data["entries"] 
+        new_entries = [(timestamp, cost) for timestamp, cost in usage_data["entries"]
                      if timestamp > expired_time]
-        
+
         if not new_entries:
             keys_to_remove.append(user_id)
         else:
             usage_cache[user_id]["entries"] = new_entries
             # Recalculate total cost
             usage_cache[user_id]["cost"] = sum(cost for _, cost in new_entries)
-    
+
     # Remove empty entries
     for key in keys_to_remove:
         del usage_cache[key]
@@ -147,15 +147,15 @@ def update_usage_data(token):
     if not usage_cache:
         logger.info("No usage data to update")
         return
-    
+
     clean_expired_entries()
-    
+
     url = f"{OPAL_SERVER_URL}/data/config"
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
     }
-    
+
     # Prepare the data update in the correct format expected by OPAL
     try:
         response = requests.post(
@@ -190,17 +190,17 @@ def process_decision_log(decision):
         if not decision.get("result") or "response" not in decision["result"]:
             logger.debug(f"Skipping decision log without result or response: {decision.get('decision_id', 'unknown')}")
             return
-        
+
         response = decision["result"]["response"]
-        
+
         # Skip if not tracking usage (like for admin or whitelisted endpoints)
         if "user_id" not in response or "cost_request" not in response:
             logger.debug(f"Skipping decision log without required fields: {decision.get('decision_id', 'unknown')}")
             return
-        
+
         user_id = response["user_id"]
         cost = response["cost_request"]
-        
+
         # Just use the user_id as the key
         if user_id not in usage_cache:
             usage_cache[user_id] = {
@@ -210,7 +210,7 @@ def process_decision_log(decision):
         else:
             usage_cache[user_id]["entries"].append((time.time(), cost))
             usage_cache[user_id]["cost"] += cost
-            
+
         logger.info(f"Updated usage for {user_id}: +{cost}")
     except Exception as e:
         logger.error(f"Error processing decision log: {e}")
@@ -220,23 +220,23 @@ def process_webhook_queue():
     with queue_lock:
         queue_copy = decision_queue.copy()
         decision_queue.clear()
-    
+
     total_decisions = len(queue_copy)
     if total_decisions > 0:
         logger.info(f"Processing {total_decisions} decisions from webhook queue")
         for decision in queue_copy:
             process_decision_log(decision)
-    
+
     return total_decisions
 
 def main():
     """Main execution function."""
     logger.info("Starting OPAL Usage Tracker")
-    
+
     # Start webhook server
     start_webhook_server()
     logger.info("Webhook server started, waiting for OPA to send decision logs")
-    
+
     while True:
         try:
             # Get a token for data updates
@@ -245,14 +245,14 @@ def main():
                 logger.warning("No token available, retrying in 10 seconds")
                 time.sleep(10)
                 continue
-            
+
             # Process logs from webhook queue
             total_decisions = process_webhook_queue()
             logger.info(f"Total decisions processed: {total_decisions}")
-            
+
             # Update usage data in OPAL
             update_usage_data(token)
-            
+
             # Wait for next update cycle
             time.sleep(UPDATE_INTERVAL)
         except KeyboardInterrupt:
@@ -263,4 +263,4 @@ def main():
             time.sleep(UPDATE_INTERVAL)
 
 if __name__ == "__main__":
-    main() 
+    main()

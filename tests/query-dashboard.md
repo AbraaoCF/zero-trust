@@ -1,0 +1,3 @@
+- (container_name.keyword: envoy-service OR  service) AND timestamp >= "2025-04-26T01:48:15" AND timestamp < "2025-04-26T01:56:15"
+- (container_name.keyword: (envoy-service OR service OR state-storage OR opensearch) )  AND timestamp >= "2025-04-25T23:55:56" AND timestamp < "2025-04-26T00:03:55"
+- (container_name.keyword: envoy-service OR service OR state-storage OR opa-service OR opal-client OR opal-server OR usage-tracker OR redis) AND timestamp >= "2025-04-25T22:44:46" AND timestamp < "2025-04-25T22:52:46"

@@ -1,15 +1,22 @@
 #!/bin/bash
 
-NORMAL_DURATION=120
-ANOMALOUS_DURATION=600
+NORMAL_DURATION=480
+ANOMALOUS_LOW_RATE_DURATION=120
+ANOMALOUS_DURATION=360
 start_normal() {
   echo "[experiment] starting normal bot..."
   bash normal.sh &
   NORMAL_PID=$!
 }
 
+start_anomalous_low_rate() {
+  echo "[experiment] starting anomalous with normal behavior bot..."
+  bash anomalous-low-rate.sh &
+  ANOMALOUS_LOW_RATE_PID=$!
+}
+
 start_anomalous() {
-  echo "[experiment] starting anomalous bot..."
+  echo "[experiment] starting anomalous on attack behavior bot..."
   bash anomalous.sh &
   ANOMALOUS_PID=$!
 }
@@ -25,8 +32,9 @@ trap "echo '[experiment] interrupted!'; stop_bots; exit 1" SIGINT
 echo "[experiment] starting at $(date -u)"
 
 start_normal
-SLEEP=$NORMAL_DURATION
-echo "[experiment] Normal user requesting for $SLEEP seconds"
+start_anomalous_low_rate
+SLEEP=$ANOMALOUS_LOW_RATE_DURATION
+echo "[experiment] Normal behaviors on requesting for $SLEEP seconds"
 sleep $SLEEP
 
 start_anomalous

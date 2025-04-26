@@ -12,6 +12,16 @@ openssl genrsa -out opa.key 4096
 openssl req -new -key opa.key -out opa.csr -config opa.cnf
 openssl x509 -req -in opa.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out opa.crt -days 365 -sha256 -extensions v3_req -extfile opa.cnf
 
+# OPAL server
+openssl genrsa -out opal-server.key 4096
+openssl req -new -key opal-server.key -out opal-server.csr -config opal-server.cnf
+openssl x509 -req -in opal-server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out opal-server.crt -days 365 -sha256 -extensions v3_req -extfile opal-server.cnf
+
+# OPAL client
+openssl genrsa -out opal-client.key 4096
+openssl req -new -key opal-client.key -out opal-client.csr -config opal-client.cnf
+openssl x509 -req -in opal-client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out opal-client.crt -days 365 -sha256 -extensions v3_req -extfile opal-client.cnf
+
 # Envoy - Service
 openssl genrsa -out envoy-service.key 4096
 openssl req -new -key envoy-service.key -out envoy-service.csr -config envoy-service.cnf
@@ -21,6 +31,11 @@ openssl x509 -req -in envoy-service.csr -CA ca.crt -CAkey ca.key -CAcreateserial
 openssl genrsa -out envoy-ss.key 4096
 openssl req -new -key envoy-ss.key -out envoy-ss.csr -config envoy-ss.cnf
 openssl x509 -req -in envoy-ss.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out envoy-ss.crt -days 365 -sha256 -extensions v3_req -extfile envoy-ss.cnf
+
+# Normal
+openssl genrsa -out normal.key 4096
+openssl req -new -key normal.key -out normal.csr -config normal.cnf
+openssl x509 -req -in normal.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out normal.crt -days 365 -sha256 -extensions v3_req -extfile normal.cnf
 
 # Normal
 openssl genrsa -out normal.key 4096

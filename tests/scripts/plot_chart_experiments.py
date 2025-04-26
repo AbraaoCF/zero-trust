@@ -28,9 +28,9 @@ def process_experiment(file_path, experiment_name):
 
 # File paths and experiment names
 experiments = {
-    "envoy-scenario.json": "Proxy",
-    "opa-scenario.json": "Motor de Políticas",
-    "opensearch-scenario.json": "Motor de logs"
+    "../data-experiment-proxy/envoy-scenario.json": "Proxy",
+    "../data-experiment-opa/opa-scenario.json": "Motor de Políticas",
+    "../data-experiment-opensearch/opensearch-scenario.json": "Motor de logs"
 }
 
 # Process all experiments
@@ -44,7 +44,8 @@ combined_df = pd.concat(all_data)
 # Plotting
 fig, ax = plt.subplots(figsize=(12, 6))
 
-colors = {200: 'green', 429: 'red'}
+# Colorblind-friendly colors: Blue for success (200), Orange for errors (429)
+colors = {200: '#0072B2', 429: '#E69F00'}  
 experiment_styles = {'Proxy': '-', 'Motor de Políticas': '--', 'Motor de logs': '-.'}
 
 for experiment, exp_data in combined_df.groupby('experiment'):
@@ -60,12 +61,12 @@ for experiment, exp_data in combined_df.groupby('experiment'):
         )
 
 # ** Add Background Shading After 120 Seconds **
-ax.axvspan(120, 480, color='#FFCCCC', alpha=0.3, label="Roubo de credenciais")
+ax.axvspan(120, 480, color='#DADAEB', alpha=0.4, label="Roubo de credenciais")  # Lighter, more neutral shade
 ax.set_xlim(0, 480)
 # Custom legend for codes
 code_legend = [
-    Line2D([0], [0], color='green', lw=2, label='200'),
-    Line2D([0], [0], color='red', lw=2, label='429')
+    Line2D([0], [0], color=colors[200], lw=2, label='200'),
+    Line2D([0], [0], color=colors[429], lw=2, label='429')
 ]
 
 # Custom legend for line styles

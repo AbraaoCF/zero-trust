@@ -120,6 +120,7 @@ choose_response(request_info, user) := response if {
 		"http_status": 429,
 		"headers": {"x-ext-authz-check": "denied", "x-ext-authz-error": "Quotas exceeded"},
 		"id": user,
+		"response" : request_info
 	}
 }
 
