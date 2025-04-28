@@ -177,7 +177,7 @@ services:
       interval: 5s
       timeout: 2s
       retries: 3
-
+docker 
   # Serviço da API real
   api-service:
     build:

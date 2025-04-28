@@ -156,7 +156,21 @@ def update_usage_data(token):
         "Content-Type": "application/json"
     }
 
-    # Prepare the data update in the correct format expected by OPAL
+    # Get current timestamp in seconds since epoch
+    current_timestamp = int(time.time())
+
+    # Prepare a simplified version with only the cost for each user
+    simplified_usage_data = {
+        "last_updated": current_timestamp,  # Add timestamp for freshness check
+        "users": {}
+    }
+    
+    for user_id, data in usage_cache.items():
+        simplified_usage_data["users"][user_id] = {
+            "cost": data["cost"]
+        }
+
+    # Send only the cost data and timestamp to OPAL
     try:
         response = requests.post(
             url,
@@ -169,7 +183,7 @@ def update_usage_data(token):
                         "topics": ["policy_data"],
                         "dst_path": "/usage_tracker",
                         "save_method": "PUT",
-                        "data": usage_cache
+                        "data": simplified_usage_data
                     }
                 ],
                 "reason": "Update usage tracking data",
@@ -179,7 +193,7 @@ def update_usage_data(token):
             }
         )
         response.raise_for_status()
-        logger.info(f"Successfully updated usage data for {len(usage_cache)} users")
+        logger.info(f"Successfully updated usage data for {len(simplified_usage_data['users'])} users (cost only) with timestamp {current_timestamp}")
     except Exception as e:
         logger.error(f"Failed to update usage data: {e}")
 
@@ -232,6 +246,12 @@ def process_webhook_queue():
 def main():
     """Main execution function."""
     logger.info("Starting OPAL Usage Tracker")
+    logger.info(f"Connecting to OPAL server at {OPAL_SERVER_URL}")
+    
+    # if VERIFY_SSL:
+    #     logger.info(f"SSL verification enabled: {SSL_VERIFY}")
+    # else:
+    #     logger.warning("SSL verification disabled")
 
     # Start webhook server
     start_webhook_server()
