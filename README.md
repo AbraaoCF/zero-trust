@@ -4,11 +4,11 @@ The microservices architecture and the popularization of cloud service providers
 
 This repository presents two access control approaches as starting points for adopting Zero Trust:
 
-- [Open Policy Agent (OPA)](https://github.com/AbraaoCF/zero-trust/blob/main/opa/README.md): one based on a policy engine with multifactor quotas;
+- [Policy Engine with Open Policy Agent (OPA)](./policy-engine/README.md): one based on a policy engine with multifactor quotas;
 
-- [OpenSearch](https://github.com/AbraaoCF/zero-trust/blob/main/opensearch/README.md): based on log analysis and alerts to define penalties.
+- [Log Engine with OpenSearch](./logs-engine/README.md): based on log analysis and alerts to define penalties.
 
-The proposed systems were evaluated based on access decisions in simulated environments.
+The proposed systems were evaluated based on access decisions in simulated environments. The tests values and assets are present in this repository [here](./tests/)
 
 ## Authors
 

@@ -1,0 +1,1 @@
+GET https://envoy.zt.local:8001/items

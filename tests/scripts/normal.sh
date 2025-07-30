@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOST="https://envoy.zt.local:8000"
+HOST="https://envoy.zt.local:8001"
 URI="/items"
 CERTS_FOLDERS="$HOME/zero-trust/commons/certs"
 CACERT="$CERTS_FOLDERS/ca.crt"
@@ -9,9 +9,9 @@ KEY="$CERTS_FOLDERS/normal.key"
 TARGETS_FILE="normal_targets.txt"
 REPORTS_FILE="normal.bin"
 INTERVAL=1
-RATE="1"
+RATE=1
 WORKERS=1
-DURATION="2m"
+DURATION="8m"
 
 function start {
   vegeta attack \

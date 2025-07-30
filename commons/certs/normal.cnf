@@ -16,3 +16,5 @@ subjectAltName = @alt_names
 
 [ alt_names ]
 URI = spiffe://zt.local/normal
+DNS.1 = localhost
+IP.1 = 127.0.0.1

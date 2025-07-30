@@ -1,0 +1,12 @@
+# Environment variables
+.env
+
+# OPAL keys directory
+keys/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log 

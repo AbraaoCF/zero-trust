@@ -5,17 +5,17 @@ import seaborn as sns
 
 # Data retrieved from OpenSearch Dashboard for the duration of experiments
 csv_data = """filters,"container_name.keyword","CPU Cores (%)"
-"Proxy",service,"5.528"
-"Proxy","envoy-service","1.742"
-"Proxy","opa-service","0.048"
-Motor de Logs,opensearch,"4.769"
-Motor de Logs,"envoy-service","2.485"
-Motor de Logs,service,"1.195"
-Motor de Logs,"state-storage","0.939"
-Motor de Políticas,"opa-service","61.674"
-Motor de Políticas,"state-storage","3.279"
-Motor de Políticas,"envoy-service","2.269"
-Motor de Políticas,service,"0.844"
+Proxy,service,"14.539512278103247"
+Proxy,"envoy-service","3.8931707092901555"
+Motor de Logs,opensearch,"8.74750001579523"
+Motor de Logs,"envoy-service","5.2914999455213545"
+Motor de Logs,service,"3.2275610133642103"
+Motor de Logs,"state-storage","2.416097549403586"
+Motor de Políticas,"opa-service-1","23.168333162864048"
+Motor de Políticas,"envoy-service","4.362250000238419"
+Motor de Políticas,"usage-tracker","3.0204166871650764"
+Motor de Políticas,"opal-server","1.490833342075348"
+Motor de Políticas,service,"0.6259999975562096"
 """
 
 # Read the data into a DataFrame

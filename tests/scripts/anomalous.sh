@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOST="https://envoy.zt.local:8000"
+HOST="https://envoy.zt.local:8001"
 URI="/items"
 CERTS_FOLDERS="$HOME/zero-trust/commons/certs"
 CACERT="$CERTS_FOLDERS/ca.crt"
@@ -9,7 +9,7 @@ KEY="$CERTS_FOLDERS/anomalous.key"
 TARGETS_FILE="anomalous_targets.txt"
 REPORTS_FILE="anomalous.bin"
 INTERVAL=1
-RATE=15
+RATE=40
 WORKERS=1
 DURATION="6m"
 
