@@ -15,8 +15,8 @@ This approach recognizes that some endpoints are more CPU-intensive than others.
 
 ### Quotas Per User Strategy
 
-- **CPU Coins**: Each user is allocated a certain amount of **CPU coins** to spend within a defined time window.
-- **Endpoint Costs**: Each endpoint has an associated cost in **CPU coins**.
+- **CPU Quotas**: Each user is allocated a certain amount of **CPU quotas** to spend within a defined time window.
+- **Endpoint Costs**: Each endpoint has an associated cost in **CPU quotas**.
 - **Quotas Management**: Every time a user calls a specific endpoint, their available quotas decreases by the endpoint's cost. This ensures that users cannot exceed their allocated CPU resources within the time window.
 
 By applying this strategy, the system can better manage CPU resources and prevent any single user from monopolizing CPU capacity, thereby maintaining overall system performance and stability.

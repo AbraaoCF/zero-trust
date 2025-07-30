@@ -26,16 +26,16 @@
   ],
   "projects_config": {
     "default": {
-      "quotas": 200,
-      "afterHoursQuotas": 0
+      "quotas": 100,
+      "afterHoursQuotas": 100
     },
     "spiffe://zt.local/normal": { 
-      "quotas": 800, 
-      "afterHoursQuotas": 800
+      "quotas": 100, 
+      "afterHoursQuotas": 100
     },
     "spiffe://acme.com/admin": {
       "quotas": 200,
-      "afterHoursQuotas": 300
+      "afterHoursQuotas": 200
     },
     "spiffe://acme.com/projeto1": {
       "quotas": 200,

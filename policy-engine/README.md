@@ -83,6 +83,8 @@ To understand the rationale behind the policy decisions and what do they cover g
 
 ### Start the system
 
+> First of all, the content of the [policies](./opa-policies/) should be inside a git repository folder named `git-repo` (this is the name referenced on the docker-compose, but it can be adjusted) for opal to have it as its data source. 
+
 To start the system just use docker and run the following comand on the root directory:
 
 ```bash
@@ -94,8 +96,8 @@ This should run the following containers and its respective ports:
  - opal-server: `7002:7002` used for policy management
  - opal-client: Connects to OPA for policy updates
  - usage-tracker: Tracks rate limiting usage
- - envoy: `10000:10000`
- - hello-word service: `5678:5678`
+
+The Envoy configuration is on the folder [envoy-service](./envoy-service/). Note that the config is pointing to a DNS `opa.zt.local` that was the VM with the above componentes.
 
 ## Contributing
 

@@ -15,6 +15,8 @@
 
 package authz
 
+import rego.v1
+
 http_request := input.attributes.request.http
 
 environment_variables := data.environment_variables
@@ -50,7 +52,7 @@ inside_working_hours if {
 	hour <= environment_variables.ending_working_hours
 
 	day := time.weekday(now_ns)
-	not day in environment_variables.weekend_days
+	not (day in environment_variables.weekend_days)
 }
 
 default allow := false
@@ -104,6 +106,7 @@ choose_response(request_info, user) := response if {
 		"allowed": true,
 		"headers": {"x-ext-authz-check": "allowed"},
 		"id": user,
+		"response" : request_info
 	}
 }
 
@@ -114,18 +117,28 @@ choose_response(request_info, user) := response if {
 		"http_status": 429,
 		"headers": {"x-ext-authz-check": "denied", "x-ext-authz-error": "Quotas exceeded"},
 		"id": user,
+		"response" : request_info
 	}
+}
+
+# Check if usage tracker data is fresh (updated within last 5 minutes)
+usage_data_is_fresh if {
+    last_updated := data.usage_tracker.last_updated
+    time_diff := now - last_updated
+    time_diff < 300  # 5 minutes = 300 seconds
 }
 
 # Instead of Redis, we'll store and retrieve rate limiting data through OPAL
 # OPAL will automatically handle the persistence and caching
 process_request_quotas(user, endpoint) := response if {
-    # Get current usage cost or default to 0 if not found
-    user_id_key := sprintf("%s/usage", [user])
-    current_usage := object.get(data.usage_tracker[user_id_key], "cost", 0)
+    # First check if usage data is fresh
+    usage_data_is_fresh
     
+    # Get current usage cost or default to 0 if not found
+    current_usage := object.get(data.usage_tracker.users, [user, "cost"], 0)
     # Get the cost of this endpoint
     cost_request := data.cost_endpoints[endpoint]
+
     
     # Check if user exceeds quotas
     new_cost := current_usage + cost_request
@@ -141,6 +154,25 @@ process_request_quotas(user, endpoint) := response if {
         "new_cost": new_cost,
         "quotas": user_quotas,
         "exceed_quotas": new_cost > user_quotas
+    }
+}
+
+# If usage data is not fresh (service might be down), allow the request but flag it
+process_request_quotas(user, endpoint) := response if {
+    not usage_data_is_fresh
+    
+    # Get the cost of this endpoint
+    cost_request := data.cost_endpoints[endpoint]
+    
+    response := {
+        "user_id": user,
+        "endpoint": endpoint,
+        "current_usage": 0,  # Default to 0 since data is stale
+        "cost_request": cost_request,
+        "new_cost": cost_request,
+        "quotas": user_quotas,
+        "exceed_quotas": false,  # Don't block if usage data is stale
+        "data_stale": true
     }
 }
 

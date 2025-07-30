@@ -1,4 +1,4 @@
-![opensearch+envoy](https://github.com/davihsg/tcc/raw/main/assets/opensearch+envoy.png)
+![opensearch+envoy](./assets/opensearch+envoy.png)
 
 # Opensearch and Envoy
 
@@ -16,7 +16,7 @@ This work explores the integration of three open-source tools, Envoy, and OpenSe
 
 ## Architecture Overview
 
-![architecture-overview](https://github.com/AbraaoCF/zero-trust/raw/main/opensearch/assets/diagrama_seq_opensearch.png)
+![architecture-overview](./assets/architecture-overview.png)
 
 Here's a brief explanation of each step in the flow:
 
@@ -222,7 +222,7 @@ cluster:
 
 You need to create a mapping in OpenSearch for storing Envoy’s access logs. This index will be the same set up in Fluent Bit.
 
-You can create the index and its mapping using a `curl` command, or by refreshing the current index. Check [envoy_mapping.json](https://github.com/davihsg/tcc/tree/main/opensearch/envoy_mapping.json).
+You can create the index and its mapping using a `curl` command, or by refreshing the current index. Check [envoy_mapping.json](./opensearch/envoy_mapping.json).
 
 Example `curl` command for creating an index:
 
@@ -293,13 +293,13 @@ The webhook should be configured with the Envoy Alert Handler URL. It should lik
 
    In OpenSearch, create monitors to watch the logs and generate alerts based on specific conditions.
 
-   The index mappings may have nested fields, especially the keyword ones. Opensearch Dashboards UI has problems when showing the group by options because of it, so the monitor should be created using `extraction query` or `via curl`. Here is an [example](https://github.com/davihsg/tcc/tree/main/opensearch/monitors/sum_duration_monitor.json) of how it should look like.
+   The index mappings may have nested fields, especially the keyword ones. Opensearch Dashboards UI has problems when showing the group by options because of it, so the monitor should be created using `extraction query` or `via curl`. Here is an [example](./opensearch/monitors/sum_duration_monitor.json) of how it should look like.
 
    There are two primary types of monitors: bucket and query monitors. With bucket ones, you can aggregate metrics based on a key and an alert will be triggered for each key. With query ones, you can specific a query and an alert will be triggered based on a defined threshold.
 
 2. **Triggers**
 
-   Create triggers for the monitors. Documentation is quite scarce in this area, so you should opt to create them using an `extraction query` or via `curl`. Here is an [example](https://github.com/davihsg/tcc/tree/main/opensearch/monitors/trigger_condition.json) of how its condition should look like.
+   Create triggers for the monitors. Documentation is quite scarce in this area, so you should opt to create them using an `extraction query` or via `curl`. Here is an [example](./opensearch/monitors/trigger_condition.json) of how its condition should look like.
 
    ```json
    {

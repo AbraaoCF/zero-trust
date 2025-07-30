@@ -19,26 +19,6 @@ services:
       usage-tracker:
         condition: service_healthy
 
-  # ext_authz-opa-service-2:
-  #   container_name: opa-service-2
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.opa
-  #   ports:
-  #     - "9003:9002"  # Diferentes portas para o segundo serviço
-  #     - "8182:8181"
-  #   volumes:
-  #     - ../commons/certs:/app/tls:ro
-  #     - ./opa-policies:/app/policies:ro
-  #   environment:
-  #     - OPA_ADDR=0.0.0.0:8181
-  #   networks:
-  #     - opa-network
-  #   hostname: opa-service-2
-  #   depends_on:
-  #     usage-tracker:
-  #       condition: service_healthy
-
   redis:
     image: redis:6-alpine
     container_name: redis
@@ -92,40 +72,12 @@ services:
       - OPAL_POLICY_STORE_URL=http://opa-service-1:8181
       - OPAL_POLICY_STORE_AUTH_METHOD=none
       - OPAL_WS_TOKEN=ZeroTrustDemo2025
-      # - OPAL_POLICY_STORE_VERIFY_TLS=false
     volumes:
       - ./git-repo:/app/policies:ro
       - ../commons/certs:/app/tls:ro
     networks:
       - opa-network
     hostname: opal-client-1
-
-  # opal-client-2:
-  #   image: permitio/opal-client:latest
-  #   container_name: opal-client-2
-  #   depends_on:
-  #     - opal-server
-  #     - ext_authz-opa-service-2
-  #   environment:
-  #     - OPAL_SERVER_URL=http://opal-server:7002
-  #     - OPAL_CLIENT_TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDQyNTcxMzksImV4cCI6MTc3NTc5MzEzOSwiYXVkIjoiaHR0cHM6Ly9hcGkub3BhbC5hYy92MS8iLCJpc3MiOiJodHRwczovL29wYWwuYWMvIiwic3ViIjoiMjdjODE3NjczODRiNGEwNmFiYzZiZWVjMmYzNTM4NjciLCJwZWVyX3R5cGUiOiJkYXRhc291cmNlIn0.gYE5V5A4rYdtNSYTEck2UVWLfKuylhEn2vHxPYHxifQdMPxecxW5F9lZKky0C82a_5oDU7YWsF8_OJ8SSLCug-PJawUz7GqMOkN_p_9vql7yKKZ1LoxZ_AJjCRIKQGaSPw1CHqlEZlTYL9dua0C5m5uaX9eLB7iytMo-5tjxJoHjged0zbuSmdCB9WatAUJQ4DrZsYbDtPhMOAmdUj9fjBeEMxOi6Fcy3rgPC87UoqIZZGXlFq41XwYjLftQ7uO-jsnzyWzZNaLzxoFs_1BWVqTnQErhuhW6ahhsQkvCv2wVSx6m9E8ptX3NczstNmg92A2nmy07OdCKuZGQsPasGZqx7Xs0eQHAp5hCbSTGVzJk42rEsngxbCWMwEo06_Z0VUZeW-cKr0p2xBjOS5v2rgx2WnpRZ6KnaVgYqeonwJUx93rXN56rUgOU1R7uW1ARWJF9Er3-RnzLIvT2g9i9AdiMck8MEe4m1rQymjCY2-qWO_XWPNHQbZLJChqaZu5_JCcZkKWdoiyCeRFflkeusw2-7zfkGiZpH_x9yPBT9uUlhmZQ1z65F1gGLISCljOZNjZ6q_MPqRKd0pZMDXe5ozj9vX9IoLRcw1VThkZEFjoWZbfrmm-UwkOA6xrbyU0nAB1CYJhkz_B2KQLitTaD83D1_sEASXXTqa27uE0I5Lw
-  #     - OPAL_POLICY_PATH=/app/policies/
-  #     - OPAL_INLINE_POLICY_ENABLED=false
-  #     - OPAL_INLINE_OPA_ENABLED=false
-  #     - OPAL_REQUEST_TIMEOUT=15
-  #     - OPAL_CACHE_ENABLED=true
-  #     - OPAL_CACHE_TTL=300
-  #     - LOG_LEVEL=debug
-  #     - OPAL_POLICY_STORE_URL=http://opa-service-2:8181
-  #     - OPAL_POLICY_STORE_AUTH_METHOD=none
-  #     - OPAL_WS_TOKEN=ZeroTrustDemo2025
-  #     # - OPAL_POLICY_STORE_VERIFY_TLS=false
-  #   volumes:
-  #     - ./opa-policies:/app/policies:ro
-  #     - ../commons/certs:/app/tls:ro
-  #   networks:
-  #     - opa-network
-  #   hostname: opal-client-2
 
   usage-tracker:
     container_name: usage-tracker
@@ -155,50 +107,6 @@ services:
       timeout: 3s
       retries: 3
       start_period: 5s
-
-  # Serviço Envoy
-  envoy:
-    image: envoyproxy/envoy:v1.22.0
-    container_name: envoy
-    ports:
-      - "8001:8001"
-    volumes:
-      - ./envoy:/etc/envoy
-      - ../commons/certs:/etc/envoy/certs:ro
-    networks:
-      - opa-network
-    depends_on:
-      - ext_authz-opa-service-1
-      # - ext_authz-opa-service-2
-      - api-service
-    hostname: envoy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/ready"]
-      interval: 5s
-      timeout: 2s
-      retries: 3
-docker 
-  # Serviço da API real
-  api-service:
-    build:
-      context: ../commons/service
-      dockerfile: Dockerfile
-    container_name: api-service
-    networks:
-      opa-network:
-        aliases:
-          - service.zt.local
-    hostname: service.zt.local
-    ports:
-      - "8889:8888"
-    environment:
-      - DB_PATH=/app/items.db
-      - PORT=8888
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8888/items"]
-      interval: 5s
-      timeout: 2s
-      retries: 3
 
 volumes:
   opa-logs-1:

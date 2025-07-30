@@ -41,7 +41,7 @@ static_resources:
                         timeout: 1s
                       transport_api_version: V3
                       status_on_error:
-                        code: 503
+                        code: 502
                   - name: envoy.filters.http.router
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
@@ -71,11 +71,11 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: service.zt.local
+                      address: api-service
                       port_value: 8888
     - name: ext_authz-opa-cluster
       connect_timeout: 0.25s
-      type: STATIC
+      type: STRICT_DNS
       lb_policy: ROUND_ROBIN
       typed_extension_protocol_options:
         envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
@@ -89,10 +89,5 @@ static_resources:
           - endpoint:
               address:
                 socket_address:
-                  address: 172.20.0.6  # opa-service-1
-                  port_value: 9002
-          - endpoint:
-              address:
-                socket_address:
-                  address: 172.20.0.7  # opa-service-2
+                  address: opa.zt.local
                   port_value: 9002
