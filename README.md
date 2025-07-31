@@ -190,8 +190,22 @@ cd policy-engine/envoy-service && docker compose up -d
 
 * **Stack OPA (OPA, OPAL Server, OPAL Client, Quota Processor):**
 
+Primeiramente, como fonte de documentos para o OPAL, é preciso referenciar um repositório do tipo git com as políticas.
+
 ```bash
-cd policy-engine && docker compose up -d
+cd policy-engine && mkdir git-repo && cd git-repo && git init
+```
+
+Em seguida, copie as políticas em [./policy-engine/opa-policies](./policy-engine/opa-policies), faça commit no repositório `./git-repo` e as políticas estão configuradas.
+
+```bash
+cd .. && cp opa-policies/* git-repo -r && cd git-repo && git add . && git commit -m "feat: bootstrap policies"
+```
+
+Por fim, inicialize o container dentro de `./policy-engine`:
+
+```bash
+cd .. && docker compose up -d
 ```
 
 5. **Iniciar Log Analysis Engine:**
