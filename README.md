@@ -47,15 +47,15 @@ O repositório está organizado da seguinte forma:
 │   ├── opa-policies/     # Políticas Rego do Open Policy Agent
 │   └── scripts/          # Scripts específicos da engine de políticas
 └── tests/                # Testes e dados utilizados na avaliação experimental
-├── data-experiment-opa/         # Dados dos experimentos com o mecanismo OPA
-├── data-experiment-opensearch/ # Dados dos experimentos com OpenSearch
-├── data-experiment-proxy/      # Dados de referência para o proxy sem filtros
-└── scripts/                    # Scripts auxiliares para rodar os testes
+    ├── data-experiment-opa/         # Dados dos experimentos com o mecanismo OPA
+    ├── data-experiment-opensearch/ # Dados dos experimentos com OpenSearch
+    ├── data-experiment-proxy/      # Dados de referência para o proxy sem filtros
+    └── scripts/                    # Scripts auxiliares para rodar os testes
 ```
 
 # Selos Considerados
 
-Os selos considerados são: **Disponíveis** e **Sustentáveis**. Ambas as implementações (Policy Engine e Log Analysis) podem ser executadas independentemente para demonstrar os princípios de Zero Trust em diferentes cenários.
+Os selos considerados são: **Disponível**, **Funcional** e **Sustentável**. Ambas as implementações (Policy Engine e Log Analysis) podem ser executadas independentemente para demonstrar os princípios de Zero Trust em diferentes cenários.
 
 # Informações básicas
 
@@ -163,21 +163,22 @@ git clone https://github.com/AbraaoCF/zero-trust.git && cd zero-trust
 2. **Gerar os certificados TLS:**
 
 ```bash
-cd commons/certs && bash create_certs.sh
+cd commons/certs && bash create_certs.sh && cd ../..
 ```
+Desse ponto em diante, **após cada `docker compose`, entende-se que retonrará para o root do repositório** e então aplicar os comandos exatos.
 
 3. **Iniciar serviços comuns:**
 
 * **Serviço simulado:**
 
 ```bash
-cd commons/service && docker compose up -d
+cd commons/service && docker compose up -d && cd ../..
 ```
 
 * **Envoy sem filtros (baseline):**
 
 ```bash
-cd commons/envoy-no-filters && docker compose up -d
+cd commons/envoy-no-filters && docker compose up -d && cd ../..
 ```
 
 4. **Iniciar Policy Engine:**
@@ -185,7 +186,7 @@ cd commons/envoy-no-filters && docker compose up -d
 * **Envoy Proxy:**
 
 ```bash
-cd policy-engine/envoy-service && docker compose up -d
+cd policy-engine/envoy-service && docker compose up -d && cd ../..
 ```
 
 * **Stack OPA (OPA, OPAL Server, OPAL Client, Quota Processor):**
@@ -205,7 +206,7 @@ cd .. && cp opa-policies/* git-repo -r && cd git-repo && git add . && git commit
 Por fim, inicialize o container dentro de `./policy-engine`:
 
 ```bash
-cd .. && docker compose up -d
+cd .. && docker compose up -d && cd ..
 ```
 
 5. **Iniciar Log Analysis Engine:**
@@ -213,13 +214,13 @@ cd .. && docker compose up -d
 * **OpenSearch (modo single-node com painel):**
 
 ```bash
-cd logs-engine/opensearch && docker compose up -d
+cd logs-engine/opensearch && docker compose up -d && cd ../..
 ```
 
 * **Envoy Proxy:**
 
 ```bash
-cd logs-engine/envoy-service && docker compose up -d
+cd logs-engine/envoy-service && docker compose up -d && cd ../..
 ```
 
 * **Armazenamento de estado (Redis + Webdis):**
