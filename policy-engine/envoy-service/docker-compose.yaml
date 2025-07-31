@@ -1,6 +1,6 @@
 services:
   envoy-service:
-    container_name: envoy-service  
+    container_name: envoy-service-policy
     image: envoyproxy/envoy:distroless-v1.32.3
     volumes:
       - ./envoy.yaml:/etc/envoy/envoy.yaml
