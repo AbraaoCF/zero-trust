@@ -260,6 +260,11 @@ curl \
 
 > **O que verificar:** A resposta esperada é um objeto JSON retornado pelo serviço simulado (`zt-service`), indicando que o Envoy autorizou a requisição com base nas políticas ou no nível de penalidade atual.
 
+Ao alterar a porta, alterasse o alvo de teste:
+- `:8000` -> Envoy Puro, sem abordagem de authz
+- `:8001` -> Envoy para Motor de políticas
+- `:8002` -> Envoy para Motor de Logs
+
 Esse teste básico permite validar rapidamente o funcionamento da cadeia mTLS, da resolução DNS local, e do pipeline de autorização.
 
 # Experimentos
