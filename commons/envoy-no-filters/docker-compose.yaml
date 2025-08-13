@@ -1,9 +1,15 @@
 services:
-  envoy-service:
-    container_name: envoy-service
+  envoy-service-no-filters:
+    container_name: envoy-service-no-filters
     image: envoyproxy/envoy:distroless-v1.32.3
     volumes:
       - ./envoy.yaml:/etc/envoy/envoy.yaml
       - ../certs:/etc/envoy/certs
     ports:
       - "8002:8002"
+    extra_hosts: # Keep to run on one machine, comment to run on different VMs
+      - "service.zt.local:host-gateway"
+      - "opensearch.zt.local:host-gateway"
+      - "opa.zt.local:host-gateway"
+      - "state-storage.zt.local:host-gateway"
+      - "envoy-service.zt.local:host-gateway"

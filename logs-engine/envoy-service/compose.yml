@@ -36,6 +36,12 @@ services:
       - fluent-bit
     networks:
       - envoy-service
+    extra_hosts: # Keep to run on one machine, comment to run on different VMs
+      - "service.zt.local:host-gateway"
+      - "opensearch.zt.local:host-gateway"
+      - "opa.zt.local:host-gateway"
+      - "state-storage.zt.local:host-gateway"
+      - "envoy-service.zt.local:host-gateway"
 
 networks:
   envoy-service:
