@@ -15,13 +15,13 @@ As seções presentes neste README incluem:
 
 1. **Título e Resumo:** Apresenta o título do projeto e o resumo técnico do artigo.
 2. **Estrutura do readme.md:** Explica a organização deste documento e do repositório como um todo.
-3. **Selos Considerados:** Define quais selos foram considerados para avaliação do artefato.
-4. **Informações básicas:** Detalha o ambiente de execução necessário (hardware e software).
-5. **Dependências:** Lista bibliotecas, ferramentas e benchmarks exigidos, com instruções de instalação.
-6. **Preocupações com segurança:** Informa se há riscos e como mitigá-los.
-7. **Instalação:** Passos para instalar e executar o sistema.
-8. **Teste mínimo:** Instruções para validar o funcionamento básico do artefato.
-9. **Experimentos:** Passo a passo para replicação das principais reivindicações experimentais do artigo.
+3. **Informações básicas:** Detalha o ambiente de execução necessário (hardware e software).
+4. **Dependências:** Lista bibliotecas, ferramentas e benchmarks exigidos, com instruções de instalação.
+5. **Preocupações com segurança:** Informa se há riscos e como mitigá-los.
+6. **Instalação:** Passos para instalar e executar o sistema.
+7. **Teste mínimo:** Instruções para validar o funcionamento básico do artefato.
+8. **Experimentos:** Passo a passo para replicação das principais reivindicações experimentais do artigo.
+9. **Artefato SBSeg2025**: Aprovação como artefato no SBSeg2025.
 10. **Licença:** Informação sobre os termos de uso do código-fonte.
 
 O repositório está organizado da seguinte forma:
@@ -52,10 +52,6 @@ O repositório está organizado da seguinte forma:
     ├── data-experiment-proxy/      # Dados de referência para o proxy sem filtros
     └── scripts/                    # Scripts auxiliares para rodar os testes
 ```
-
-# Selos Considerados
-
-Os selos considerados são: **Disponível**, **Funcional** e **Sustentável**. Ambas as implementações (Policy Engine e Log Analysis) podem ser executadas independentemente para demonstrar os princípios de Zero Trust em diferentes cenários.
 
 # Informações básicas
 
@@ -307,6 +303,10 @@ bash tests/scripts/experiment.sh
 Esse script gera arquivos `.raw` com os dados brutos de cada execução. Esses dados podem ser analisados utilizando a ferramenta Vegeta para produzir relatórios de performance e comportamento do sistema.
 
 Os resultados esperados incluem métricas como latência, quantidade de requisições aceitas/negadas, alertas gerados, e penalidades aplicadas — alinhados às reivindicações descritas no artigo.
+
+# Artefato SBSeg2025
+
+Este repositório obteve os selos **Disponível**, **Funcional** e **Sustentável** pela comissão de artefatos do Simpósio Brasileiro de Cibersegurança XXV (SBSeg 2025), [resultado disponível](https://doc-artefatos.github.io/sbseg2025/results.html). Ambas as implementações (Policy Engine e Log Analysis) podem ser executadas independentemente para demonstrar os princípios de Zero Trust em diferentes cenários.
 
 # LICENSE
 
