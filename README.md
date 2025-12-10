@@ -1,5 +1,7 @@
 # Simplificando a adoção de ZTA com Motor de Políticas e Decisões Baseadas em _Logs_
 
+Artigo Publicado Simpósio Brasileiro de Cibersegurança (SBSEG) XXV: https://doi.org/10.5753/sbseg.2025.11482
+
 **Resumo do artigo:**
 
 A arquitetura de microsserviços e a popularização de provedores de nuvem como serviço introduziram desafios de cibersegurança. Perímetros de rede dinâmicos, superfícies de ataque ampliadas e comunicações complexas invalidam modelos tradicionais baseados em perímetros estáticos.  
