@@ -1,6 +1,25 @@
 # Simplificando a adoção de ZTA com Motor de Políticas e Decisões Baseadas em _Logs_
 
-Artigo Publicado Simpósio Brasileiro de Cibersegurança (SBSEG) XXV: https://doi.org/10.5753/sbseg.2025.11482
+Repositório base do artigo "**Simplificando a adoção de ZTA com Motor de Políticas e Decisões Baseadas em _Logs_" -  https://doi.org/10.5753/sbseg.2025.11482**
+
+Referência BibTeX:
+
+```
+@inproceedings{sbseg,
+ author = {Abraão Freitas and Davi Guimarães and Andrey Brito},
+ title = { Simplificando a adoção de ZTA com Motor de Políticas e Decisões Baseadas em Logs},
+ booktitle = {Anais do XXV Simpósio Brasileiro de Cibersegurança},
+ location = {Foz do Iguaçu/PR},
+ year = {2025},
+ keywords = {},
+ issn = {0000-0000},
+ pages = {822--838},
+ publisher = {SBC},
+ address = {Porto Alegre, RS, Brasil},
+ doi = {10.5753/sbseg.2025.11482},
+ url = {https://sol.sbc.org.br/index.php/sbseg/article/view/36660}
+}
+```
 
 **Resumo do artigo:**
 
